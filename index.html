@@ -203,7 +203,7 @@
         </div>
 
         <!-- Options Grid -->
-        <div id="learn-options" class="grid grid-cols-1 md:grid-cols-2 gap-3"></div>
+        <div id="learn-options" class="grid grid-cols-1 gap-3"></div>
 
         <!-- Multi-select Submit Button -->
         <div id="learn-multi-actions" class="hidden flex justify-end">
@@ -1045,7 +1045,7 @@
               ${isMulti ? '<span class="px-2 py-0.5 rounded bg-teal-50 dark:bg-teal-900/40 text-teal-700 dark:text-teal-300 text-xs font-bold">${it.q.ans.length} đáp án</span>' : ''}
             </div>
             <h3 class="font-display font-bold text-base sm:text-lg leading-relaxed">${highlightNegation(it.q.stem)}</h3>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-2.5">
+            <div class="grid grid-cols-1 gap-2.5">
               ${it.optOrder.map((origIdx, dIdx) => `
                 <button type="button" data-qidx="${idx}" data-orig="${origIdx}"
                   class="test-opt text-left rounded-xl border-2 border-slate-200 dark:border-slate-600 bg-slate-50/40 dark:bg-[#1F2544] p-3.5 text-sm font-medium flex items-start gap-2.5 hover:border-qprimary transition-all">

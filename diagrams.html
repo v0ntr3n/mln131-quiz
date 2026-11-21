@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MLN131 Editorial Diagram Atlas — Sơ Đồ Khoanh Nhanh Theo Keyword</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;1,400&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap" rel="stylesheet" />
+  <style>
+    /* cathrynlavery/diagram-design Editorial Tokens — Cool Editorial Palette, No Shadows */
+    :root {
+      --paper: #f5f5f5;
+      --paper-2: #ececec;
+      --surface: #ffffff;
+      --ink: #2d3142;
+      --muted: #4f5d75;
+      --hair: #d4d7de;
+      --accent: #bf4520;
+      --accent-soft: #faeae5;
+      --font-serif: 'Newsreader', Georgia, serif;
+      --font-sans: 'Be Vietnam Pro', system-ui, sans-serif;
+      --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: var(--font-sans);
+      line-height: 1.55;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .page-shell {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 36px clamp(18px, 4vw, 48px) 72px;
+    }
+
+    /* Editorial Masthead (Flat, Hairline Rule, Zero Shadow) */
+    .masthead {
+      border-bottom: 1.5px solid var(--ink);
+      padding-bottom: 20px;
+      margin-bottom: 28px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 16px;
+    }
+    .eyebrow {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin: 0 0 8px 0;
+    }
+    h1 {
+      font-family: var(--font-serif);
+      font-weight: 400;
+      font-size: clamp(28px, 4vw, 42px);
+      line-height: 1.12;
+      letter-spacing: -0.015em;
+      margin: 0;
+      color: var(--ink);
+    }
+    .deck {
+      font-size: 14px;
+      color: var(--muted);
+      margin: 10px 0 0 0;
+      max-width: 62ch;
+    }
+    .meta-strip {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--muted);
+      text-align: right;
+    }
+    .meta-strip strong {
+      color: var(--ink);
+      font-weight: 600;
+    }
+
+    /* Flat Navigation Tabs */
+    .nav-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 32px;
+      border-bottom: 1px solid var(--hair);
+      padding-bottom: 14px;
+    }
+    .nav-btn {
+      appearance: none;
+      background: transparent;
+      border: 1px solid var(--hair);
+      border-radius: 4px;
+      padding: 7px 13px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--muted);
+      cursor: pointer;
+      transition: border-color 0.15s ease, color 0.15s ease, background-color 0.15s ease;
+    }
+    .nav-btn:hover {
+      border-color: var(--ink);
+      color: var(--ink);
+    }
+    .nav-btn.active {
+      background: var(--ink);
+      border-color: var(--ink);
+      color: #ffffff;
+    }
+
+    /* Diagram Plate */
+    .plate {
+      margin-bottom: 48px;
+      padding-bottom: 36px;
+      border-bottom: 1px solid var(--hair);
+    }
+    .plate:last-of-type { border-bottom: none; }
+    .plate.hidden { display: none; }
+
+    .plate-head {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+    .plate-num {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-right: 10px;
+    }
+    .plate-title {
+      font-family: var(--font-serif);
+      font-weight: 400;
+      font-size: clamp(22px, 2.8vw, 28px);
+      margin: 0;
+      color: var(--ink);
+    }
+    .plate-sub {
+      font-size: 13.5px;
+      color: var(--muted);
+      margin: 4px 0 18px 0;
+      max-width: 72ch;
+    }
+
+    /* SVG Canvas Frame — Flat, Hairline Border, No Shadow */
+    .svg-frame {
+      background: var(--surface);
+      border: 1px solid var(--hair);
+      border-radius: 6px;
+      padding: clamp(12px, 2vw, 24px);
+      overflow-x: auto;
+    }
+    .svg-frame svg {
+      width: 100%;
+      height: auto;
+      display: block;
+      min-width: 640px;
+    }
+
+    /* Interactive Clickable Nodes */
+    .node-hit {
+      cursor: pointer;
+      transition: opacity 0.15s ease;
+    }
+    .node-hit:hover rect.n-box {
+      stroke: var(--accent);
+      stroke-width: 1.8;
+    }
+    .node-hit.selected rect.n-box {
+      stroke: var(--accent);
+      stroke-width: 2.2;
+      fill: var(--accent-soft);
+    }
+
+    /* Inspector Strip Below Diagram (Flat Editorial Callout) */
+    .inspector {
+      margin-top: 14px;
+      background: var(--paper-2);
+      border-left: 3px solid var(--accent);
+      border-radius: 0 4px 4px 0;
+      padding: 14px 18px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+    }
+    .inspector-label {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--accent);
+      margin: 0 0 4px 0;
+    }
+    .inspector-title {
+      font-weight: 600;
+      font-size: 15px;
+      color: var(--ink);
+      margin: 0 0 6px 0;
+    }
+    .inspector-body {
+      font-size: 13.5px;
+      color: var(--ink);
+      margin: 0;
+      line-height: 1.55;
+    }
+    .inspector-body code {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      background: var(--surface);
+      border: 1px solid var(--hair);
+      padding: 1px 5px;
+      border-radius: 3px;
+      color: var(--accent);
+    }
+
+    .footer-note {
+      margin-top: 24px;
+      padding-top: 16px;
+      border-top: 1px solid var(--hair);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 10px;
+      font-family: var(--font-mono);
+      font-size: 11.5px;
+      color: var(--muted);
+    }
+  </style>
+</head>
+<body>
+  <div class="page-shell">
+
+    <header class="masthead">
+      <div>
+        <p class="eyebrow">MLN131 · EDITORIAL DIAGRAM ATLAS · 428 CÂU LỌC TRÙNG</p>
+        <h1>Bản Đồ Sơ Đồ Khoanh Nhanh Theo Keyword</h1>
+        <p class="deck">Hệ thống 4 sơ đồ biên tập tinh gọn (không đổ bóng, mật độ thoáng, điểm nhấn san hô duy nhất cho nút trọng tâm) giúp quét từ khóa và chốt đáp án MLN131 trong 3 giây. Bấm vào bất kỳ khối nào để xem cặp từ khóa chi tiết.</p>
+      </div>
+      <div class="meta-strip">
+        <div>NGÂN HÀNG: <strong>428 câu · 7 chương</strong></div>
+        <div>NHIỀU ĐÁP ÁN: <strong>23 câu</strong> · PHỦ ĐỊNH: <strong>18 câu</strong></div>
+      </div>
+    </header>
+
+    <nav class="nav-bar" aria-label="Chọn sơ đồ">
+      <button type="button" class="nav-btn active" data-plate="all">Tất cả (4 sơ đồ)</button>
+      <button type="button" class="nav-btn" data-plate="p1">01 · Cây phản xạ 3 giây</button>
+      <button type="button" class="nav-btn" data-plate="p2">02 · Kiến trúc 7 Chương</button>
+      <button type="button" class="nav-btn" data-plate="p3">03 · Ma trận 6 cặp bẫy</button>
+      <button type="button" class="nav-btn" data-plate="p4">04 · Trọng số 428 câu</button>
+    </nav>
+
+    <!-- ==================== PLATE 01: DECISION FLOWCHART ==================== -->
+    <section id="p1" class="plate">
+      <div class="plate-head">
+        <div>
+          <span class="plate-num">DIAGRAM 01 · FLOWCHART</span>
+          <h2 class="plate-title">Cây Quyết Định Phản Xạ 3 Giây Khi Đọc Đề</h2>
+        </div>
+      </div>
+      <p class="plate-sub">Áp dụng nguyên tắc lọc tầng trước khi đọc hết 4 phương án dài: 3 nhánh từ khóa cố định bên dưới xử lý ngay hơn 100 câu hỏi lý thuyết nền tảng xuyên suốt cả 7 chương.</p>
+
+      <div class="svg-frame">
+        <svg viewBox="0 0 960 350" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Lưu đồ quyết định phản xạ 3 giây MLN131">
+          <defs>
+            <marker id="arr-ink" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+              <path d="M 1 1.5 L 8.5 5 L 1 8.5" fill="none" stroke="#2d3142" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </marker>
+            <marker id="arr-acc" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+              <path d="M 1 1.5 L 8.5 5 L 1 8.5" fill="none" stroke="#bf4520" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </marker>
+          </defs>
+
+          <!-- Root Trigger Node -->
+          <g class="node-hit" data-info="p1-root">
+            <rect class="n-box" x="350" y="18" width="260" height="68" rx="6" fill="#2d3142" stroke="#2d3142" stroke-width="1.5"/>
+            <text x="480" y="45" text-anchor="middle" font-family="Be Vietnam Pro, sans-serif" font-size="15" font-weight="600" fill="#ffffff">ĐỌC ĐỀ MLN131</text>
+            <text x="480" y="67" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11.5" fill="#d4d7de">Quét 1 cụm từ khóa trong 2 giây</text>
+          </g>
+
+          <!-- Orthogonal Connectors -->
+          <path d="M 480 86 L 480 124" fill="none" stroke="#2d3142" stroke-width="1.4"/>
+          <path d="M 118 124 L 842 124" fill="none" stroke="#2d3142" stroke-width="1.4"/>
+
+          <!-- 4 Vertical Drops -->
+          <path d="M 118 124 L 118 202" fill="none" stroke="#2d3142" stroke-width="1.4" marker-end="url(#arr-ink)"/>
+          <path d="M 358 124 L 358 202" fill="none" stroke="#bf4520" stroke-width="1.6" marker-end="url(#arr-acc)"/>
+          <path d="M 602 124 L 602 202" fill="none" stroke="#2d3142" stroke-width="1.4" marker-end="url(#arr-ink)"/>
+          <path d="M 842 124 L 842 202" fill="none" stroke="#2d3142" stroke-width="1.4" marker-end="url(#arr-ink)"/>
+
+          <!-- Edge Labels (Mono) -->
+          <rect x="64" y="146" width="108" height="22" rx="3" fill="#f5f5f5" stroke="#d4d7de" stroke-width="1"/>
+          <text x="118" y="161" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11" fill="#4f5d75">KHÔNG / SAI</text>
+
+          <rect x="292" y="146" width="132" height="22" rx="3" fill="#faeae5" stroke="#bf4520" stroke-width="1"/>
+          <text x="358" y="161" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11" fill="#bf4520">LÃNH ĐẠO / CHỦ QUAN</text>
+
+          <rect x="540" y="146" width="124" height="22" rx="3" fill="#f5f5f5" stroke="#d4d7de" stroke-width="1"/>
+          <text x="602" y="161" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11" fill="#4f5d75">NGUỒN GỐC ÁP BỨC</text>
+
+          <rect x="782" y="146" width="120" height="22" rx="3" fill="#f5f5f5" stroke="#d4d7de" stroke-width="1"/>
+          <text x="842" y="161" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11" fill="#4f5d75">LIỆT KÊ ĐẦY ĐỦ</text>
+
+          <!-- 4 Leaf Nodes (Coral ONLY on Focal Node 2!) -->
+          <g class="node-hit" data-info="p1-neg">
+            <rect class="n-box" x="18" y="210" width="200" height="112" rx="6" fill="#f5f5f5" stroke="#2d3142" stroke-width="1.2"/>
+            <text x="118" y="236" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="10.5" fill="#4f5d75">18 CÂU PHỦ ĐỊNH</text>
+            <text x="118" y="262" text-anchor="middle" font-family="Be Vietnam Pro, sans-serif" font-size="14.5" font-weight="600" fill="#2d3142">Chọn ý lạc môn</text>
+            <text x="118" y="285" text-anchor="middle" font-family="Be Vietnam Pro, sans-serif" font-size="12" fill="#4f5d75">VD: Trừu tượng hóa</text>
+            <text x="118" y="303" text-anchor="middle" font-family="Be Vietnam Pro, sans-serif" font-size="12" fill="#4f5d75">(thuộc MLN122)</text>
+          </g>
+
+          <g class="node-hit" data-info="p1-focal">
+            <rect class="n-box" x="258" y="210" width="200" height="112" rx="6" fill="#faeae5" stroke="#bf4520" stroke-width="1.8"/>
+            <text x="358" y="236" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="10.5" fill="#bf4520">FOCAL · TẦN SUẤT CAO</text>
+            <text x="358" y="262" text-anchor="middle" font-family="Be Vietnam Pro, sans-serif" font-size="14.5" font-weight="600" fill="#2d3142">Đảng CS &amp; GCCN</text>
+            <text x="358" y="285" text-anchor="middle" font-family="Be Vietnam Pro, sans-serif" font-size="12" fill="#4f5d75">Tiên quyết · Quyền lực</text>
+            <text x="358" y="303" text-anchor="middle" font-family="Be Vietnam Pro, sans-serif" font-size="12" fill="#4f5d75">Nhân tố chủ quan số 1</text>
+          </g>
+
+          <g class="node-hit" data-info="p1-private">
+            <rect class="n-box" x="502" y="210" width="200" height="112" rx="6" fill="#ececec" stroke="#4f5d75" stroke-width="1.2"/>
+            <text x="602" y="236" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="10.5" fill="#4f5d75">GỐC RỄ KINH TẾ</text>
+            <text x="602" y="262" text-anchor="middle" font-family="Be Vietnam Pro, sans-serif" font-size="14.5" font-weight="600" fill="#2d3142">Chế độ tư hữu</text>
+            <text x="602" y="285" text-anchor="middle" font-family="Be Vietnam Pro, sans-serif" font-size="12" fill="#4f5d75">Về tư liệu sản xuất</text>
+            <text x="602" y="303" text-anchor="middle" font-family="Be Vietnam Pro, sans-serif" font-size="12" fill="#4f5d75">(Bóc lột, gia trưởng)</text>
+          </g>
+
+          <g class="node-hit" data-info="p1-all">
+            <rect class="n-box" x="742" y="210" width="200" height="112" rx="6" fill="#f5f5f5" stroke="#2d3142" stroke-width="1.2"/>
+            <text x="842" y="236" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="10.5" fill="#4f5d75">23 CÂU GỘP Ý</text>
+            <text x="842" y="262" text-anchor="middle" font-family="Be Vietnam Pro, sans-serif" font-size="14.5" font-weight="600" fill="#2d3142">Tất cả đều đúng</text>
+            <text x="842" y="285" text-anchor="middle" font-family="Be Vietnam Pro, sans-serif" font-size="12" fill="#4f5d75">Khi A, B, C đều chuẩn</text>
+            <text x="842" y="303" text-anchor="middle" font-family="Be Vietnam Pro, sans-serif" font-size="12" fill="#4f5d75">giáo trình MLN131</text>
+          </g>
+        </svg>
+      </div>
+
+      <div id="ins-p1" class="inspector">
+        <div>
+          <p class="inspector-label">Ghi chú tương tác · Bấm vào khối trên sơ đồ để đổi nội dung</p>
+          <p class="inspector-title">Nhánh trọng tâm: Đảng Cộng sản &amp; Giai cấp công nhân</p>
+          <p class="inspector-body">Khi đề hỏi <code>nhân tố chủ quan quan trọng nhất</code>, <code>điều kiện tiên quyết</code> để giữ vững dân chủ XHCN, hay <code>bản chất giai cấp</code> của Nhà nước XHCN → chốt ngay <code>Đảng Cộng sản</code> hoặc <code>Giai cấp công nhân</code>.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== PLATE 02: 7-CHAPTER ARCHITECTURE ==================== -->
+    <section id="p2" class="plate">
+      <div class="plate-head">
+        <div>
+          <span class="plate-num">DIAGRAM 02 · ARCHITECTURE FLOW</span>
+          <h2 class="plate-title">Kiến Trúc 2 Tầng Mạch Từ Khóa 7 Chương CNXHKH</h2>
+        </div>
+      </div>
+      <p class="plate-sub">Tầng trên là khung lý luận gốc (C1–C3), tầng dưới là thực tiễn xây dựng xã hội &amp; con người Việt Nam (C4–C7). Điểm nhấn san hô đặt tại 2 chương có nhiều bẫy và câu hỏi nhất: <strong>C3 (Quá độ)</strong> và <strong>C6 (Dân tộc &amp; Tôn giáo)</strong>.</p>
+
+      <div class="svg-frame">
+        <svg viewBox="0 0 960 410" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Kiến trúc 2 tầng từ khóa 7 chương MLN131">
+          <defs>
+            <marker id="arr-ink-2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+              <path d="M 1 1.5 L 8.5 5 L 1 8.5" fill="none" stroke="#2d3142" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </marker>
+          </defs>
+
+          <!-- Tier 1 Label -->
+          <text x="20" y="24" font-family="IBM Plex Mono, monospace" font-size="11" letter-spacing="1" fill="#4f5d75">TẦNG 1 · NỀN TẢNG LÝ LUẬN (C1 – C3)</text>
+          <line x1="20" y1="34" x2="940" y2="34" stroke="#d4d7de" stroke-width="1"/>
+
+          <!-- C1 -->
+          <g class="node-hit" data-info="c1">
+            <rect class="n-box" x="20" y="54" width="276" height="114" rx="6" fill="#f5f5f5" stroke="#2d3142" stroke-width="1.2"/>
+            <text x="38" y="78" font-family="IBM Plex Mono, monospace" font-size="11" fill="#4f5d75">CHƯƠNG 01 · 71 CÂU</text>
+            <text x="38" y="102" font-family="Be Vietnam Pro, sans-serif" font-size="15" font-weight="600" fill="#2d3142">Nhập môn CNXHKH</text>
+            <text x="38" y="126" font-family="Be Vietnam Pro, sans-serif" font-size="12.5" fill="#4f5d75">Tuyên ngôn ĐCS (1848) · 3 phát kiến</text>
+            <text x="38" y="148" font-family="Be Vietnam Pro, sans-serif" font-size="12.5" fill="#4f5d75">Lênin: Lý luận → Hiện thực (1917)</text>
+          </g>
+
+          <line x1="296" y1="111" x2="338" y2="111" stroke="#2d3142" stroke-width="1.4" marker-end="url(#arr-ink-2)"/>
+
+          <!-- C2 -->
+          <g class="node-hit" data-info="c2">
+            <rect class="n-box" x="342" y="54" width="276" height="114" rx="6" fill="#f5f5f5" stroke="#2d3142" stroke-width="1.2"/>
+            <text x="360" y="78" font-family="IBM Plex Mono, monospace" font-size="11" fill="#4f5d75">CHƯƠNG 02 · 53 CÂU</text>
+            <text x="360" y="102" font-family="Be Vietnam Pro, sans-serif" font-size="15" font-weight="600" fill="#2d3142">Sứ mệnh lịch sử GCCN</text>
+            <text x="360" y="126" font-family="Be Vietnam Pro, sans-serif" font-size="12.5" fill="#4f5d75">Đại công nghiệp · ĐK khách quan (2)</text>
+            <text x="360" y="148" font-family="Be Vietnam Pro, sans-serif" font-size="12.5" fill="#4f5d75">GCCN VN: Trước tư sản dân tộc</text>
+          </g>
+
+          <line x1="618" y1="111" x2="660" y2="111" stroke="#2d3142" stroke-width="1.4" marker-end="url(#arr-ink-2)"/>
+
+          <!-- C3 (Focal Coral 1) -->
+          <g class="node-hit" data-info="c3">
+            <rect class="n-box" x="664" y="54" width="276" height="114" rx="6" fill="#faeae5" stroke="#bf4520" stroke-width="1.8"/>
+            <text x="682" y="78" font-family="IBM Plex Mono, monospace" font-size="11" fill="#bf4520">CHƯƠNG 03 · 39 CÂU · HAY BẪY</text>
+            <text x="682" y="102" font-family="Be Vietnam Pro, sans-serif" font-size="15" font-weight="600" fill="#2d3142">CNXH &amp; Thời kỳ quá độ</text>
+            <text x="682" y="126" font-family="Be Vietnam Pro, sans-serif" font-size="12.5" fill="#2d3142">Bỏ qua TBCN · Hưởng theo lao động</text>
+            <text x="682" y="148" font-family="Be Vietnam Pro, sans-serif" font-size="12.5" fill="#4f5d75">8 phương hướng (số 1: CNH, HĐH)</text>
+          </g>
+
+          <!-- Orthogonal Bridge Down to Tier 2 -->
+          <path d="M 802 168 L 802 204 L 128 204 L 128 242" fill="none" stroke="#2d3142" stroke-width="1.4" marker-end="url(#arr-ink-2)"/>
+
+          <!-- Tier 2 Label -->
+          <text x="20" y="226" font-family="IBM Plex Mono, monospace" font-size="11" letter-spacing="1" fill="#4f5d75">TẦNG 2 · THIẾT CHẾ &amp; CỘNG ĐỒNG XÃ HỘI (C4 – C7)</text>
+          <line x1="20" y1="236" x2="940" y2="236" stroke="#d4d7de" stroke-width="1"/>
+
+          <!-- C4 -->
+          <g class="node-hit" data-info="c4">
+            <rect class="n-box" x="20" y="254" width="216" height="128" rx="6" fill="#f5f5f5" stroke="#2d3142" stroke-width="1.2"/>
+            <text x="36" y="278" font-family="IBM Plex Mono, monospace" font-size="10.5" fill="#4f5d75">CHƯƠNG 04 · 68 CÂU</text>
+            <text x="36" y="302" font-family="Be Vietnam Pro, sans-serif" font-size="14.5" font-weight="600" fill="#2d3142">Dân chủ &amp; Nhà nước</text>
+            <text x="36" y="326" font-family="Be Vietnam Pro, sans-serif" font-size="12" fill="#4f5d75">Demos + Kratos · Gián tiếp</text>
+            <text x="36" y="346" font-family="Be Vietnam Pro, sans-serif" font-size="12" fill="#4f5d75">Tổ chức xây dựng là chủ yếu</text>
+            <text x="36" y="366" font-family="IBM Plex Mono, monospace" font-size="10.5" fill="#bf4520">5 câu nhiều đáp án</text>
+          </g>
+
+          <line x1="236" y1="318" x2="256" y2="318" stroke="#2d3142" stroke-width="1.3" marker-end="url(#arr-ink-2)"/>
+
+          <!-- C5 -->
+          <g class="node-hit" data-info="c5">
+            <rect class="n-box" x="260" y="254" width="216" height="128" rx="6" fill="#f5f5f5" stroke="#2d3142" stroke-width="1.2"/>
+            <text x="276" y="278" font-family="IBM Plex Mono, monospace" font-size="10.5" fill="#4f5d75">CHƯƠNG 05 · 60 CÂU</text>
+            <text x="276" y="302" font-family="Be Vietnam Pro, sans-serif" font-size="14.5" font-weight="600" fill="#2d3142">Cơ cấu &amp; Liên minh</text>
+            <text x="276" y="326" font-family="Be Vietnam Pro, sans-serif" font-size="12" fill="#4f5d75">CCXH-Giai cấp quyết định</text>
+            <text x="276" y="346" font-family="Be Vietnam Pro, sans-serif" font-size="12" fill="#4f5d75">Nội dung KINH TẾ là gốc</text>
+            <text x="276" y="366" font-family="Be Vietnam Pro, sans-serif" font-size="12" fill="#4f5d75">Doanh nhân · Trí thức (4.0)</text>
+          </g>
+
+          <line x1="476" y1="318" x2="496" y2="318" stroke="#2d3142" stroke-width="1.3" marker-end="url(#arr-ink-2)"/>
+
+          <!-- C6 (Focal Coral 2 — Highest Question Count) -->
+          <g class="node-hit" data-info="c6">
+            <rect class="n-box" x="500" y="254" width="216" height="128" rx="6" fill="#faeae5" stroke="#bf4520" stroke-width="1.8"/>
+            <text x="516" y="278" font-family="IBM Plex Mono, monospace" font-size="10.5" fill="#bf4520">CHƯƠNG 06 · 74 CÂU · TOP 1</text>
+            <text x="516" y="302" font-family="Be Vietnam Pro, sans-serif" font-size="14.5" font-weight="600" fill="#2d3142">Dân tộc &amp; Tôn giáo</text>
+            <text x="516" y="326" font-family="Be Vietnam Pro, sans-serif" font-size="12" fill="#2d3142">Rộng = 5 · Hẹp = 3 đặc trưng</text>
+            <text x="516" y="346" font-family="Be Vietnam Pro, sans-serif" font-size="12" fill="#4f5d75">Bình đẳng · Tự quyết · Liên hiệp</text>
+            <text x="516" y="366" font-family="Be Vietnam Pro, sans-serif" font-size="12" fill="#4f5d75">Thờ cúng Hùng Vương</text>
+          </g>
+
+          <line x1="716" y1="318" x2="736" y2="318" stroke="#2d3142" stroke-width="1.3" marker-end="url(#arr-ink-2)"/>
+
+          <!-- C7 -->
+          <g class="node-hit" data-info="c7">
+            <rect class="n-box" x="740" y="254" width="200" height="128" rx="6" fill="#ececec" stroke="#4f5d75" stroke-width="1.2"/>
+            <text x="756" y="278" font-family="IBM Plex Mono, monospace" font-size="10.5" fill="#4f5d75">CHƯƠNG 07 · 63 CÂU</text>
+            <text x="756" y="302" font-family="Be Vietnam Pro, sans-serif" font-size="14.5" font-weight="600" fill="#2d3142">Vấn đề Gia đình</text>
+            <text x="756" y="326" font-family="Be Vietnam Pro, sans-serif" font-size="12" fill="#4f5d75">Hôn nhân &amp; Huyết thống</text>
+            <text x="756" y="346" font-family="Be Vietnam Pro, sans-serif" font-size="12" fill="#4f5d75">Hạt nhân (2 thế hệ)</text>
+            <text x="756" y="366" font-family="Be Vietnam Pro, sans-serif" font-size="12" fill="#4f5d75">Tái sản xuất con người</text>
+          </g>
+        </svg>
+      </div>
+
+      <div id="ins-p2" class="inspector">
+        <div>
+          <p class="inspector-label">Chi tiết chương đang chọn</p>
+          <p class="inspector-title">Chương 6 · Dân tộc &amp; Tôn giáo (74 câu — nhiều nhất toàn đề)</p>
+          <p class="inspector-body">Ghi nhớ 4 trục: <code>Nghĩa rộng = 5</code> vs <code>Nghĩa hẹp = 3</code> (quyết định nhất: <code>Ý thức tự giác tộc người</code>); <code>Cương lĩnh Lênin</code> (Bình đẳng – Tự quyết chính trị – Liên hiệp công nhân); <code>2 xu hướng</code> (Tách ra &amp; Liên hiệp lại); <code>2 mặt tôn giáo</code> (Chính trị = đối kháng, Tư tưởng = không đối kháng).</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== PLATE 03: 6 CONTRAST PAIRS MATRIX ==================== -->
+    <section id="p3" class="plate">
+      <div class="plate-head">
+        <div>
+          <span class="plate-num">DIAGRAM 03 · CONTRAST MATRIX</span>
+          <h2 class="plate-title">Ma Trận 6 Cặp Khái Niệm Hay Bị Đánh Tráo Nhất</h2>
+        </div>
+      </div>
+      <p class="plate-sub">Phần lớn câu mất điểm oan trong MLN131 đều rơi vào 6 cặp khái niệm song sinh này. Đặt cạnh nhau theo trục trái – phải giúp phân biệt dứt khoát ngay khi liếc mắt.</p>
+
+      <div class="svg-frame">
+        <svg viewBox="0 0 960 430" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Ma trận 6 cặp khái niệm hay nhầm MLN131">
+          <!-- Column Headers -->
+          <text x="220" y="24" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11.5" font-weight="600" fill="#bf4520">NHÁNH A · ĐÁP ÁN CHUẨN THƯỜNG HỎI</text>
+          <text x="480" y="24" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11" fill="#4f5d75">VS</text>
+          <text x="740" y="24" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11.5" font-weight="600" fill="#2d3142">NHÁNH B · BẪY ĐÁNH TRÁO</text>
+          <line x1="20" y1="36" x2="940" y2="36" stroke="#2d3142" stroke-width="1.2"/>
+
+          <!-- Row 1 -->
+          <rect x="20" y="50" width="404" height="52" rx="4" fill="#faeae5" stroke="#bf4520" stroke-width="1.2"/>
+          <text x="36" y="72" font-family="Be Vietnam Pro, sans-serif" font-size="13.5" font-weight="600" fill="#2d3142">Chủ nghĩa xã hội (Giai đoạn thấp)</text>
+          <text x="36" y="92" font-family="IBM Plex Mono, monospace" font-size="11.5" fill="#bf4520">→ Làm theo năng lực, HƯỞNG THEO LAO ĐỘNG</text>
+          <line x1="424" y1="76" x2="536" y2="76" stroke="#d4d7de" stroke-width="1.5" stroke-dasharray="4 4"/>
+          <rect x="536" y="50" width="404" height="52" rx="4" fill="#ececec" stroke="#d4d7de" stroke-width="1"/>
+          <text x="552" y="72" font-family="Be Vietnam Pro, sans-serif" font-size="13.5" font-weight="600" fill="#2d3142">Chủ nghĩa Cộng sản (Giai đoạn cao)</text>
+          <text x="552" y="92" font-family="IBM Plex Mono, monospace" font-size="11.5" fill="#4f5d75">→ Làm theo năng lực, hưởng theo nhu cầu</text>
+
+          <!-- Row 2 -->
+          <rect x="20" y="114" width="404" height="52" rx="4" fill="#f5f5f5" stroke="#2d3142" stroke-width="1.1"/>
+          <text x="36" y="136" font-family="Be Vietnam Pro, sans-serif" font-size="13.5" font-weight="600" fill="#2d3142">Dân tộc NGHĨA RỘNG (Quốc gia - Nation)</text>
+          <text x="36" y="156" font-family="IBM Plex Mono, monospace" font-size="11.5" fill="#2d3142">→ 5 đặc trưng (lãnh thổ, KT, NN, VH, Nhà nước)</text>
+          <line x1="424" y1="140" x2="536" y2="140" stroke="#d4d7de" stroke-width="1.5" stroke-dasharray="4 4"/>
+          <rect x="536" y="114" width="404" height="52" rx="4" fill="#ececec" stroke="#d4d7de" stroke-width="1"/>
+          <text x="552" y="136" font-family="Be Vietnam Pro, sans-serif" font-size="13.5" font-weight="600" fill="#2d3142">Dân tộc NGHĨA HẸP (Tộc người - Ethnie)</text>
+          <text x="552" y="156" font-family="IBM Plex Mono, monospace" font-size="11.5" fill="#4f5d75">→ 3 đặc trưng (NN, VH, Ý thức tự giác)</text>
+
+          <!-- Row 3 -->
+          <rect x="20" y="178" width="404" height="52" rx="4" fill="#f5f5f5" stroke="#2d3142" stroke-width="1.1"/>
+          <text x="36" y="200" font-family="Be Vietnam Pro, sans-serif" font-size="13.5" font-weight="600" fill="#2d3142">Quá độ GIÁN TIẾP (Thực tế ở Việt Nam)</text>
+          <text x="36" y="220" font-family="IBM Plex Mono, monospace" font-size="11.5" fill="#2d3142">→ Bỏ qua chế độ TBCN (vị trí thống trị)</text>
+          <line x1="424" y1="204" x2="536" y2="204" stroke="#d4d7de" stroke-width="1.5" stroke-dasharray="4 4"/>
+          <rect x="536" y="178" width="404" height="52" rx="4" fill="#ececec" stroke="#d4d7de" stroke-width="1"/>
+          <text x="552" y="200" font-family="Be Vietnam Pro, sans-serif" font-size="13.5" font-weight="600" fill="#2d3142">Quá độ TRỰC TIẾP (Từ TBCN phát triển)</text>
+          <text x="552" y="220" font-family="IBM Plex Mono, monospace" font-size="11.5" fill="#4f5d75">→ CHƯA TỪNG diễn ra trong lịch sử</text>
+
+          <!-- Row 4 -->
+          <rect x="20" y="242" width="404" height="52" rx="4" fill="#f5f5f5" stroke="#2d3142" stroke-width="1.1"/>
+          <text x="36" y="264" font-family="Be Vietnam Pro, sans-serif" font-size="13.5" font-weight="600" fill="#2d3142">Tôn giáo — MẶT CHÍNH TRỊ</text>
+          <text x="36" y="284" font-family="IBM Plex Mono, monospace" font-size="11.5" fill="#2d3142">→ Mâu thuẫn ĐỐI KHÁNG (lợi dụng, chia rẽ)</text>
+          <line x1="424" y1="268" x2="536" y2="268" stroke="#d4d7de" stroke-width="1.5" stroke-dasharray="4 4"/>
+          <rect x="536" y="242" width="404" height="52" rx="4" fill="#ececec" stroke="#d4d7de" stroke-width="1"/>
+          <text x="552" y="264" font-family="Be Vietnam Pro, sans-serif" font-size="13.5" font-weight="600" fill="#2d3142">Tôn giáo — MẶT TƯ TƯỞNG</text>
+          <text x="552" y="284" font-family="IBM Plex Mono, monospace" font-size="11.5" fill="#4f5d75">→ Mâu thuẫn KHÔNG đối kháng (niềm tin)</text>
+
+          <!-- Row 5 -->
+          <rect x="20" y="306" width="404" height="52" rx="4" fill="#f5f5f5" stroke="#2d3142" stroke-width="1.1"/>
+          <text x="36" y="328" font-family="Be Vietnam Pro, sans-serif" font-size="13.5" font-weight="600" fill="#2d3142">Dân chủ GIÁN TIẾP (Đại diện)</text>
+          <text x="36" y="348" font-family="IBM Plex Mono, monospace" font-size="11.5" fill="#2d3142">→ Bầu đại biểu Quốc hội, HĐND thay mặt</text>
+          <line x1="424" y1="332" x2="536" y2="332" stroke="#d4d7de" stroke-width="1.5" stroke-dasharray="4 4"/>
+          <rect x="536" y="306" width="404" height="52" rx="4" fill="#ececec" stroke="#d4d7de" stroke-width="1"/>
+          <text x="552" y="328" font-family="Be Vietnam Pro, sans-serif" font-size="13.5" font-weight="600" fill="#2d3142">Dân chủ TRỰC TIẾP</text>
+          <text x="552" y="348" font-family="IBM Plex Mono, monospace" font-size="11.5" fill="#4f5d75">→ Dân tự bàn, quyết định trực tiếp ở cơ sở</text>
+
+          <!-- Row 6 -->
+          <rect x="20" y="370" width="404" height="52" rx="4" fill="#faeae5" stroke="#bf4520" stroke-width="1.2"/>
+          <text x="36" y="392" font-family="Be Vietnam Pro, sans-serif" font-size="13.5" font-weight="600" fill="#2d3142">Phương hướng SỐ 1 (Cương lĩnh 2011)</text>
+          <text x="36" y="412" font-family="IBM Plex Mono, monospace" font-size="11.5" fill="#bf4520">→ Đẩy mạnh CNH, HĐH gắn KT tri thức</text>
+          <line x1="424" y1="396" x2="536" y2="396" stroke="#d4d7de" stroke-width="1.5" stroke-dasharray="4 4"/>
+          <rect x="536" y="370" width="404" height="52" rx="4" fill="#ececec" stroke="#d4d7de" stroke-width="1"/>
+          <text x="552" y="392" font-family="Be Vietnam Pro, sans-serif" font-size="13.5" font-weight="600" fill="#2d3142">Phương hướng SỐ 2 (Cương lĩnh 2011)</text>
+          <text x="552" y="412" font-family="IBM Plex Mono, monospace" font-size="11.5" fill="#4f5d75">→ Phát triển KTTT định hướng XHCN</text>
+        </svg>
+      </div>
+    </section>
+
+    <!-- ==================== PLATE 04: HORIZONTAL BAR CHART ==================== -->
+    <section id="p4" class="plate">
+      <div class="plate-head">
+        <div>
+          <span class="plate-num">DIAGRAM 04 · RANKED BAR CHART</span>
+          <h2 class="plate-title">Trọng Số 428 Câu Hỏi Theo 7 Chương (Xếp Hạng Ưu Tiên Ôn)</h2>
+        </div>
+      </div>
+      <p class="plate-sub">Màu san hô đánh dấu 2 chương chiếm tỷ trọng lớn nhất (C6 = 74 câu và C1 = 71 câu — chiếm 33,9% toàn bộ ngân hàng đề). Cột phải ghi chú rõ số câu bẫy chọn nhiều đáp án và câu phủ định.</p>
+
+      <div class="svg-frame">
+        <svg viewBox="0 0 960 364" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Biểu đồ thanh ngang trọng số 7 chương MLN131">
+          <!-- Column Headings -->
+          <text x="20" y="24" font-family="IBM Plex Mono, monospace" font-size="11" fill="#4f5d75">CHƯƠNG HỌC</text>
+          <text x="276" y="24" font-family="IBM Plex Mono, monospace" font-size="11" fill="#4f5d75">SỐ CÂU (TỔNG 428)</text>
+          <text x="748" y="24" font-family="IBM Plex Mono, monospace" font-size="11" fill="#4f5d75">CÂU BẪY CẦN CHÚ Ý</text>
+          <line x1="20" y1="34" x2="940" y2="34" stroke="#2d3142" stroke-width="1.2"/>
+
+          <!-- Vertical grid lines (scale: 0..80 -> x=276..676, 5px per question) -->
+          <line x1="276" y1="42" x2="276" y2="334" stroke="#2d3142" stroke-width="1"/>
+          <line x1="476" y1="42" x2="476" y2="334" stroke="#ececec" stroke-width="1"/>
+          <line x1="676" y1="42" x2="676" y2="334" stroke="#ececec" stroke-width="1"/>
+
+          <!-- Row 1: C6 (74) - FOCAL -->
+          <text x="20" y="72" font-family="Be Vietnam Pro, sans-serif" font-size="13.5" font-weight="600" fill="#2d3142">C6 · Dân tộc &amp; Tôn giáo</text>
+          <rect x="276" y="54" width="370" height="26" rx="3" fill="#bf4520"/>
+          <text x="656" y="72" font-family="IBM Plex Mono, monospace" font-size="13" font-weight="600" fill="#bf4520">74 (17,3%)</text>
+          <text x="748" y="72" font-family="IBM Plex Mono, monospace" font-size="11.5" fill="#4f5d75">3 nhiều ĐA · 0 phủ định</text>
+
+          <!-- Row 2: C1 (71) - FOCAL -->
+          <text x="20" y="114" font-family="Be Vietnam Pro, sans-serif" font-size="13.5" font-weight="600" fill="#2d3142">C1 · Nhập môn CNXHKH</text>
+          <rect x="276" y="96" width="355" height="26" rx="3" fill="#bf4520"/>
+          <text x="641" y="114" font-family="IBM Plex Mono, monospace" font-size="13" font-weight="600" fill="#bf4520">71 (16,6%)</text>
+          <text x="748" y="114" font-family="IBM Plex Mono, monospace" font-size="11.5" fill="#4f5d75">2 nhiều ĐA · 5 phủ định</text>
+
+          <!-- Row 3: C4 (68) -->
+          <text x="20" y="156" font-family="Be Vietnam Pro, sans-serif" font-size="13.5" font-weight="500" fill="#2d3142">C4 · Dân chủ &amp; Nhà nước</text>
+          <rect x="276" y="138" width="340" height="26" rx="3" fill="#2d3142"/>
+          <text x="626" y="156" font-family="IBM Plex Mono, monospace" font-size="13" fill="#2d3142">68 (15,9%)</text>
+          <text x="748" y="156" font-family="IBM Plex Mono, monospace" font-size="11.5" fill="#bf4520">5 nhiều ĐA · 2 phủ định</text>
+
+          <!-- Row 4: C7 (63) -->
+          <text x="20" y="198" font-family="Be Vietnam Pro, sans-serif" font-size="13.5" font-weight="500" fill="#2d3142">C7 · Vấn đề Gia đình</text>
+          <rect x="276" y="180" width="315" height="26" rx="3" fill="#2d3142"/>
+          <text x="601" y="198" font-family="IBM Plex Mono, monospace" font-size="13" fill="#2d3142">63 (14,7%)</text>
+          <text x="748" y="198" font-family="IBM Plex Mono, monospace" font-size="11.5" fill="#4f5d75">4 nhiều ĐA · 3 phủ định</text>
+
+          <!-- Row 5: C5 (60) -->
+          <text x="20" y="240" font-family="Be Vietnam Pro, sans-serif" font-size="13.5" font-weight="500" fill="#2d3142">C5 · Cơ cấu &amp; Liên minh</text>
+          <rect x="276" y="222" width="300" height="26" rx="3" fill="#4f5d75"/>
+          <text x="586" y="240" font-family="IBM Plex Mono, monospace" font-size="13" fill="#2d3142">60 (14,0%)</text>
+          <text x="748" y="240" font-family="IBM Plex Mono, monospace" font-size="11.5" fill="#bf4520">4 nhiều ĐA · 6 phủ định</text>
+
+          <!-- Row 6: C2 (53) -->
+          <text x="20" y="282" font-family="Be Vietnam Pro, sans-serif" font-size="13.5" font-weight="500" fill="#2d3142">C2 · Sứ mệnh GCCN</text>
+          <rect x="276" y="264" width="265" height="26" rx="3" fill="#4f5d75"/>
+          <text x="551" y="282" font-family="IBM Plex Mono, monospace" font-size="13" fill="#2d3142">53 (12,4%)</text>
+          <text x="748" y="282" font-family="IBM Plex Mono, monospace" font-size="11.5" fill="#4f5d75">3 nhiều ĐA · 2 phủ định</text>
+
+          <!-- Row 7: C3 (39) -->
+          <text x="20" y="324" font-family="Be Vietnam Pro, sans-serif" font-size="13.5" font-weight="500" fill="#2d3142">C3 · CNXH &amp; Quá độ</text>
+          <rect x="276" y="306" width="195" height="26" rx="3" fill="#8b95a5"/>
+          <text x="481" y="324" font-family="IBM Plex Mono, monospace" font-size="13" fill="#2d3142">39 (9,1%)</text>
+          <text x="748" y="324" font-family="IBM Plex Mono, monospace" font-size="11.5" fill="#4f5d75">2 nhiều ĐA · 0 phủ định</text>
+
+          <!-- Axis ticks -->
+          <text x="276" y="354" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11" fill="#4f5d75">0</text>
+          <text x="476" y="354" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11" fill="#4f5d75">40 câu</text>
+          <text x="676" y="354" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11" fill="#4f5d75">80 câu</text>
+        </svg>
+      </div>
+    </section>
+
+    <footer class="footer-note">
+      <span>NGUỒN DỮ LIỆU: FE_MLN131_FE_NHUNGHOANG.TXT (428 CÂU DUY NHẤT)</span>
+      <span>THIẾT KẾ THEO HỆ EDITORIAL DIAGRAM · FLAT HTML + INLINE SVG</span>
+    </footer>
+  </div>
+
+  <script>
+    const INFO = {
+      'p1-root': {
+        target: 'ins-p1',
+        title: 'Bước 1: Đọc lướt câu hỏi — Bắt 1 cụm từ khóa trong 2 giây',
+        html: 'Đừng đọc vội 4 đáp án dài. Kiểm tra trước xem đề có từ phủ định (<code>không phải</code>, <code>sai</code>), hỏi về <code>lãnh đạo/chủ quan</code>, <code>nguồn gốc áp bức</code>, hay liệt kê ý giáo trình có đáp án <code>Tất cả đều đúng</code>.'
+      },
+      'p1-neg': {
+        target: 'ins-p1',
+        title: '18 câu phủ định (KHÔNG PHẢI / KHÔNG THUỘC / SAI)',
+        html: 'Tìm phương án "lạc môn" hoặc đảo ngược bản chất. Ví dụ kinh điển: <code>Phương pháp trừu tượng hóa khoa học</code> thuộc MLN122 (Kinh tế chính trị), KHÔNG phải phương pháp của MLN131!'
+      },
+      'p1-focal': {
+        target: 'ins-p1',
+        title: 'Nhánh trọng tâm: Đảng Cộng sản & Giai cấp công nhân',
+        html: 'Khi đề hỏi <code>nhân tố chủ quan quan trọng nhất</code>, <code>điều kiện tiên quyết</code> để giữ vững dân chủ XHCN, hay <code>bản chất giai cấp</code> của Nhà nước XHCN → chốt ngay <code>Đảng Cộng sản</code> hoặc <code>Giai cấp công nhân</code>.'
+      },
+      'p1-private': {
+        target: 'ins-p1',
+        title: 'Nguồn gốc sâu xa: Chế độ tư hữu về tư liệu sản xuất',
+        html: 'Mọi câu hỏi về nguồn gốc ra đời của <code>áp bức bóc lột</code>, <code>bất bình đẳng giới</code>, hay <code>sự thống trị của đàn ông trong gia đình</code> đều quy về <code>Chế độ tư hữu về tư liệu sản xuất</code>.'
+      },
+      'p1-all': {
+        target: 'ins-p1',
+        title: '23 câu có đáp án gộp "Tất cả các đáp án đều đúng"',
+        html: 'Xuất hiện nhiều ở C1 (7 câu), C2 (6 câu) và C7 (4 câu). Khi thấy 3 ý A, B, C đều là định nghĩa chuẩn giáo trình và không mâu thuẫn nhau → chốt ngay phương án gộp tất cả.'
+      },
+      'c1': {
+        target: 'ins-p2',
+        title: 'Chương 1 · Nhập môn CNXHKH (71 câu)',
+        html: 'Từ khóa chốt: Ra đời CNXHKH → <code>Tuyên ngôn của Đảng Cộng sản (2/1848)</code>; Nghĩa hẹp → <code>1 trong 3 bộ phận Mác–Lênin</code>; 1843–1844 → <code>Duy tâm→Duy vật & Dân chủ CM→Cộng sản</code>; Lênin → <code>Lý luận thành hiện thực (CM Tháng 10)</code>; Sử học tư sản trước Mác → <code>Phát hiện giai cấp & đấu tranh giai cấp</code>.'
+      },
+      'c2': {
+        target: 'ins-p2',
+        title: 'Chương 2 · Sứ mệnh lịch sử của giai cấp công nhân (53 câu)',
+        html: 'Từ khóa chốt: Phương thức lao động → <code>Đại công nghiệp</code>; 2 điều kiện khách quan → <code>Địa vị kinh tế + Địa vị chính trị - xã hội</code>; Nhân tố chủ quan số 1 → <code>Đảng Cộng sản</code>; Công nhân VN → <code>Ra đời từ khai thác thuộc địa Pháp (trước tư sản dân tộc)</code>.'
+      },
+      'c3': {
+        target: 'ins-p2',
+        title: 'Chương 3 · CNXH & Thời kỳ quá độ (39 câu — Hay bẫy nhất)',
+        html: 'Từ khóa chốt: Quá độ gián tiếp → <code>Bỏ qua TBCN</code>; Chưa từng diễn ra → <code>Quá độ trực tiếp</code>; Nguyên tắc phân phối CNXH → <code>Hưởng theo lao động</code>; Cương lĩnh 2011 → <code>8 phương hướng</code> (số 1: <code>CNH, HĐH gắn KT tri thức</code>); Kinh tế thời quá độ → <code>Nhiều thành phần (có đối lập)</code>.'
+      },
+      'c4': {
+        target: 'ins-p2',
+        title: 'Chương 4 · Dân chủ XHCN & Nhà nước XHCN (68 câu · 5 câu nhiều đáp án)',
+        html: 'Từ khóa chốt: <code>Demos + Kratos</code> → Quyền lực thuộc về nhân dân; <code>Dân chủ quân sự</code> → Cộng sản nguyên thủy; Bầu Quốc hội/HĐND → <code>Dân chủ gián tiếp</code>; Bản chất giai cấp → <code>Giai cấp công nhân</code>; Chức năng chủ yếu của Nhà nước XHCN → <code>Tổ chức xây dựng</code>.'
+      },
+      'c5': {
+        target: 'ins-p2',
+        title: 'Chương 5 · Cơ cấu xã hội & Liên minh giai cấp (60 câu · 6 câu phủ định)',
+        html: 'Từ khóa chốt: Cơ cấu quyết định nhất → <code>Cơ cấu xã hội – giai cấp</code>; Nội dung cơ bản nhất của liên minh → <code>Nội dung kinh tế</code>; Nông dân hiện nay → <code>Giảm dần số lượng, tỷ lệ</code>; Tầng lớp mới năng động → <code>Doanh nhân</code>; Gắn với CMCN 4.0 → <code>Đội ngũ trí thức</code>.'
+      },
+      'c6': {
+        target: 'ins-p2',
+        title: 'Chương 6 · Dân tộc & Tôn giáo (74 câu — Nhiều nhất toàn đề)',
+        html: 'Từ khóa chốt: Số đặc trưng dân tộc → <code>Nghĩa rộng = 5</code>, <code>Nghĩa hẹp = 3</code> (quyết định: <code>Ý thức tự giác tộc người</code>); Cương lĩnh Lênin → <code>Bình đẳng · Tự quyết (chính trị) · Liên hiệp công nhân</code>; Tín ngưỡng quốc gia → <code>Thờ cúng vua Hùng</code>; Mặt đối kháng của tôn giáo → <code>Mặt chính trị</code>.'
+      },
+      'c7': {
+        target: 'ins-p2',
+        title: 'Chương 7 · Vấn đề Gia đình (63 câu · 4 câu nhiều đáp án)',
+        html: 'Từ khóa chốt: Quan hệ cơ bản nhất → <code>Hôn nhân và huyết thống</code>; Kiểu phổ biến hiện nay → <code>Gia đình hạt nhân (2 thế hệ)</code>; Chức năng đặc thù riêng → <code>Tái sản xuất ra con người</code>; 3 nguyên tắc hôn nhân tiến bộ → <code>Tự nguyện · 1 vợ 1 chồng bình đẳng · Đảm bảo pháp lý</code>.'
+      }
+    };
+
+    // Plate filter tabs
+    document.querySelectorAll('.nav-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const target = btn.dataset.plate;
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.toggle('active', b === btn));
+        document.querySelectorAll('.plate').forEach(sec => {
+          sec.classList.toggle('hidden', target !== 'all' && sec.id !== target);
+        });
+      });
+    });
+
+    // Clickable SVG nodes -> update inspector panel
+    document.querySelectorAll('.node-hit').forEach(node => {
+      node.addEventListener('click', () => {
+        const key = node.dataset.info;
+        const data = INFO[key];
+        if (!data) return;
+        const parentPlate = node.closest('.plate');
+        parentPlate.querySelectorAll('.node-hit').forEach(n => n.classList.remove('selected'));
+        node.classList.add('selected');
+        const box = document.getElementById(data.target);
+        if (box) {
+          box.querySelector('.inspector-title').textContent = data.title;
+          box.querySelector('.inspector-body').innerHTML = data.html;
+        }
+      });
+    });
+  </script>
+</body>
+</html>

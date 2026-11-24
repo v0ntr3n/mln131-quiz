@@ -1,0 +1,1738 @@
+<!DOCTYPE html>
+<html lang="vi" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>REL301m — Learn</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace']
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    .kbd-key {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      font-weight: 600;
+      width: 1.5rem;
+      height: 1.5rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 0.4rem;
+      border: 1px solid rgba(148, 163, 184, 0.45);
+      background: rgba(248, 250, 252, 0.9);
+      color: #475569;
+      flex-shrink: 0;
+    }
+    .dark .kbd-key {
+      background: rgba(15, 23, 42, 0.9);
+      border-color: rgba(71, 85, 105, 0.7);
+      color: #94a3b8;
+    }
+    @keyframes cardFadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-card {
+      animation: cardFadeIn 0.18s ease-out;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 min-h-screen flex flex-col transition-colors duration-200">
+
+  <!-- Minimal Quizlet-Learn Style Header -->
+  <header class="sticky top-0 z-30 bg-white/90 dark:bg-slate-900/90 backdrop-blur border-b border-slate-200/70 dark:border-slate-800">
+    <div class="max-w-4xl mx-auto px-4 h-14 flex items-center justify-between gap-2">
+      <div class="flex items-center gap-2">
+        <div class="w-8 h-8 rounded-lg bg-indigo-600 text-white flex items-center justify-center shrink-0">
+          <i data-lucide="graduation-cap" class="w-4 h-4"></i>
+        </div>
+        <span class="font-bold text-sm sm:text-base tracking-tight">REL301m</span>
+        <span id="saveStatusLabel" title="Auto-saved" class="w-2 h-2 rounded-full bg-emerald-500 inline-block"></span>
+      </div>
+
+      <nav aria-label="Study Modes" class="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 p-1 rounded-xl">
+        <button type="button" data-mode-tab="learn" class="mode-tab-btn px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all flex items-center gap-1.5">
+          <i data-lucide="sparkles" class="w-4 h-4"></i>
+          <span>Learn</span>
+        </button>
+        <button type="button" data-mode-tab="exam" class="mode-tab-btn px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all flex items-center gap-1.5">
+          <i data-lucide="timer" class="w-4 h-4"></i>
+          <span>Test</span>
+        </button>
+        <button type="button" data-mode-tab="browse" class="mode-tab-btn px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all flex items-center gap-1.5">
+          <i data-lucide="search" class="w-4 h-4"></i>
+          <span>List</span>
+        </button>
+      </nav>
+
+      <div class="flex items-center gap-1">
+        <button type="button" id="btnOpenOptionsModal" title="Learn Options" class="p-2 rounded-lg text-slate-500 hover:text-indigo-600 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+          <i data-lucide="sliders-horizontal" class="w-4 h-4"></i>
+        </button>
+        <button type="button" id="btnOpenBackupModal" title="Backup / Restore JSON" class="p-2 rounded-lg text-slate-500 hover:text-indigo-600 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+          <i data-lucide="download-cloud" class="w-4 h-4"></i>
+        </button>
+        <button type="button" id="btnOpenResetModal" title="Reset progress" class="p-2 rounded-lg text-slate-500 hover:text-rose-600 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+          <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+        </button>
+        <button type="button" id="btnToggleTheme" title="Light / Dark" class="p-2 rounded-lg text-slate-500 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+          <i data-lucide="moon" id="themeIconMoon" class="w-4 h-4"></i>
+          <i data-lucide="sun" id="themeIconSun" class="w-4 h-4 hidden"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="flex-1 max-w-4xl w-full mx-auto px-4 py-5 space-y-4">
+
+    <!-- Compact Deck & Mastery Bar -->
+    <section id="deckOverviewBar" class="space-y-2.5">
+      <div class="flex flex-wrap items-center justify-between gap-2">
+        <div class="flex flex-wrap items-center gap-1.5">
+          <div id="deckPillsContainer" class="flex flex-wrap items-center gap-1.5"></div>
+          <span id="activeDeckSourceLinks" class="text-xs text-indigo-600 dark:text-indigo-400"></span>
+        </div>
+
+        <div id="statusFilterPills" class="flex flex-wrap items-center gap-1">
+          <button type="button" data-status-filter="all" class="status-pill px-2.5 py-1 rounded-lg text-xs font-semibold transition-colors">All</button>
+          <button type="button" data-status-filter="unseen" class="status-pill px-2.5 py-1 rounded-lg text-xs font-semibold transition-colors">New <span id="statUnseenCount" class="font-mono opacity-75">0</span></button>
+          <button type="button" data-status-filter="learning" class="status-pill px-2.5 py-1 rounded-lg text-xs font-semibold transition-colors">Familiar <span id="statLearningCount" class="font-mono opacity-75">0</span></button>
+          <button type="button" data-status-filter="mastered" class="status-pill px-2.5 py-1 rounded-lg text-xs font-semibold transition-colors">Mastered <span id="statMasteredCount" class="font-mono opacity-75">0</span></button>
+          <button type="button" data-status-filter="starred" class="status-pill px-2.5 py-1 rounded-lg text-xs font-semibold transition-colors">★ <span id="statStarredCount" class="font-mono opacity-75">0</span></button>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2.5">
+        <div class="flex-1 h-1.5 bg-slate-200/80 dark:bg-slate-800 rounded-full overflow-hidden flex">
+          <div id="barMastered" class="bg-emerald-500 h-full transition-all duration-300" style="width: 0%"></div>
+          <div id="barLearning" class="bg-indigo-400 h-full transition-all duration-300" style="width: 0%"></div>
+        </div>
+        <span id="statMasteryPercent" class="text-xs font-mono font-semibold text-slate-500 dark:text-slate-400 shrink-0">0%</span>
+      </div>
+    </section>
+
+    <!-- ==================== VIEW 1: QUIZLET LEARN MODE (DEFAULT) ==================== -->
+    <section id="viewLearn" class="space-y-3">
+      <!-- Empty Filter State -->
+      <div id="learnEmptyState" class="hidden bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-10 text-center space-y-3">
+        <i data-lucide="check-circle-2" class="w-8 h-8 text-emerald-500 mx-auto"></i>
+        <p class="text-sm font-semibold text-slate-600 dark:text-slate-300">No cards in this filter</p>
+        <button type="button" id="btnResetLearnFilter" class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold">Show All</button>
+      </div>
+
+      <!-- Active Learn Workspace -->
+      <div id="learnWorkspace" class="space-y-3">
+        <!-- Quizlet Learn Segmented Round Progress Bar -->
+        <div class="flex items-center gap-3 px-1">
+          <span id="learnRoundBadge" class="px-2 py-0.5 rounded-md bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 font-mono text-xs font-bold shrink-0">R1</span>
+          <div class="flex-1 h-2 bg-slate-200/80 dark:bg-slate-800 rounded-full overflow-hidden">
+            <div id="learnRoundBar" class="h-full bg-indigo-600 dark:bg-indigo-500 rounded-full transition-all duration-300" style="width: 0%"></div>
+          </div>
+          <span id="learnRoundProgressText" class="font-mono text-xs font-semibold text-slate-500 dark:text-slate-400 shrink-0">0 / 7</span>
+          <button type="button" id="btnLearnNewRound" title="Shuffle new round" class="p-1.5 rounded-lg hover:bg-slate-200/70 dark:hover:bg-slate-800 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200">
+            <i data-lucide="shuffle" class="w-3.5 h-3.5"></i>
+          </button>
+        </div>
+
+        <!-- Quizlet Learn Main Question Card -->
+        <div id="learnQuestionCard" class="animate-card bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/90 dark:border-slate-800 p-5 sm:p-8 shadow-sm space-y-6">
+          <!-- Card Meta Row -->
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+              <span id="learnSetBadge" class="font-mono text-xs font-semibold text-indigo-600 dark:text-indigo-400"></span>
+              <!-- Quizlet 2-dot Mastery Indicator -->
+              <span id="learnMasteryDots" class="inline-flex items-center gap-1" title="Mastery progress"></span>
+              <span id="learnRetryBadge" class="hidden px-2 py-0.5 rounded-full text-[11px] font-semibold bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300">Try again</span>
+            </div>
+
+            <div class="flex items-center gap-1">
+              <button type="button" id="btnLearnSpeak" title="Read aloud" class="p-1.5 rounded-lg text-slate-400 hover:text-indigo-600 hover:bg-slate-100 dark:hover:bg-slate-800">
+                <i data-lucide="volume-2" class="w-4 h-4"></i>
+              </button>
+              <button type="button" id="btnLearnStar" title="Star (S)" class="p-1.5 rounded-lg text-slate-400 hover:text-amber-500 hover:bg-slate-100 dark:hover:bg-slate-800">
+                <i data-lucide="star" class="w-4 h-4"></i>
+              </button>
+              <a id="learnSourceLink" title="Quizlet source" href="https://quizlet.com/1238874494/rel301m-exam-rl-flashcards/" target="_blank" rel="noopener noreferrer" class="p-1.5 rounded-lg text-slate-400 hover:text-indigo-600">
+                <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+              </a>
+            </div>
+          </div>
+
+          <!-- Question Stem -->
+          <div class="min-h-[76px] flex items-center">
+            <h2 id="learnQuestionText" class="text-base sm:text-xl font-semibold leading-relaxed text-slate-900 dark:text-white"></h2>
+          </div>
+
+          <!-- Quizlet Learn 2x2 Answer Grid -->
+          <div class="space-y-2.5">
+            <div class="flex items-center justify-between text-xs text-slate-400">
+              <span id="learnPromptHint" class="font-medium">Choose answer</span>
+              <button type="button" id="btnLearnDontKnow" class="font-semibold text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">Don't know?</button>
+            </div>
+            <div id="learnOptionsContainer" class="grid grid-cols-1 gap-2"></div>
+          </div>
+
+          <!-- Instant Feedback Bar -->
+          <div id="learnFeedbackBox" class="hidden rounded-xl p-3.5 border flex items-center justify-between gap-3">
+            <div class="space-y-0.5 min-w-0">
+              <div id="learnFeedbackTitle" class="font-bold text-xs sm:text-sm"></div>
+              <p id="learnFeedbackDetail" class="text-xs leading-relaxed opacity-90"></p>
+            </div>
+            <button type="button" id="btnLearnContinue" class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold shrink-0">Continue ↵</button>
+          </div>
+        </div>
+
+        <!-- Quizlet Learn End-of-Round Checkpoint -->
+        <div id="learnRoundSummary" class="hidden animate-card bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-sm space-y-5">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl bg-emerald-100 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
+                <i data-lucide="trophy" class="w-5 h-5"></i>
+              </div>
+              <div>
+                <h3 class="text-base sm:text-lg font-bold" id="learnCompleteHeading">Round complete!</h3>
+                <p class="text-xs font-mono text-slate-500" id="learnCompleteSubtext"></p>
+              </div>
+            </div>
+            <div class="flex gap-2">
+              <button type="button" id="btnLearnNextBatch" class="px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs sm:text-sm shadow-sm">Next round ↵</button>
+              <button type="button" id="btnLearnSwitchExam" class="px-3.5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 font-semibold text-xs sm:text-sm">Test</button>
+            </div>
+          </div>
+
+          <!-- Compact Recap of Cards in Round -->
+          <div id="learnRoundRecapList" class="divide-y divide-slate-100 dark:divide-slate-800 max-h-64 overflow-y-auto"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== VIEW 2: MOCK TEST (FE SIMULATOR) ==================== -->
+    <section id="viewExam" class="hidden space-y-4">
+      <div id="examSetupPanel" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="md:col-span-2 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 shadow-sm space-y-4">
+          <h2 class="text-base font-bold">Test (FE)</h2>
+
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <select id="selExamDeck" aria-label="Deck" class="rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 px-3 py-2 text-xs sm:text-sm font-medium">
+              <option value="all_rl">All (200)</option>
+              <option value="exam_rl">Exam RL (50)</option>
+              <option value="su25_rl">SU25 (50)</option>
+              <option value="sp26_fe">SP26 (50)</option>
+              <option value="su26_fe">SU26 (50)</option>
+              <option value="weak_only">Familiar / Wrong</option>
+            </select>
+
+            <select id="selExamCount" aria-label="Questions" class="rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 px-3 py-2 text-xs sm:text-sm font-medium">
+              <option value="15">15 Qs</option>
+              <option value="30">30 Qs</option>
+              <option value="50" selected>50 Qs (FE)</option>
+              <option value="200">All</option>
+            </select>
+
+            <select id="selExamTimer" aria-label="Timer" class="rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 px-3 py-2 text-xs sm:text-sm font-medium">
+              <option value="15">15 min</option>
+              <option value="45">45 min</option>
+              <option value="60" selected>60 min</option>
+              <option value="0">Untimed</option>
+            </select>
+          </div>
+
+          <div class="flex flex-wrap items-center gap-4 text-xs font-medium text-slate-600 dark:text-slate-300">
+            <label class="inline-flex items-center gap-1.5 cursor-pointer select-none">
+              <input type="checkbox" id="chkExamShuffleQ" checked class="rounded text-indigo-600" />
+              <span>Shuffle Qs</span>
+            </label>
+            <label class="inline-flex items-center gap-1.5 cursor-pointer select-none">
+              <input type="checkbox" id="chkExamShuffleOpt" class="rounded text-indigo-600" />
+              <span>Shuffle A-D</span>
+            </label>
+          </div>
+
+          <div id="examSetupNotice" class="hidden p-2.5 rounded-xl bg-amber-50 dark:bg-amber-950/50 text-xs text-amber-800 dark:text-amber-300"></div>
+
+          <button type="button" id="btnStartExam" class="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-sm inline-flex items-center gap-2">
+            <i data-lucide="play" class="w-4 h-4"></i>
+            <span>Start Test</span>
+          </button>
+        </div>
+
+        <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 shadow-sm space-y-3">
+          <div class="flex items-center justify-between text-xs font-semibold text-slate-500">
+            <span>History</span>
+            <span id="examHistoryCount" class="font-mono">0</span>
+          </div>
+          <div id="examHistoryList" class="space-y-2 max-h-52 overflow-y-auto"></div>
+        </div>
+      </div>
+
+      <!-- Active Exam -->
+      <div id="examActivePanel" class="hidden grid grid-cols-1 md:grid-cols-3 gap-4 items-start">
+        <div class="md:col-span-2 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 sm:p-6 shadow-sm space-y-4">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span id="examQIndexBadge" class="font-mono font-bold text-xs text-indigo-600 dark:text-indigo-400">1 / 50</span>
+              <span id="examQSetBadge" class="text-xs text-slate-400"></span>
+            </div>
+            <button type="button" id="btnExamFlag" class="px-2.5 py-1 rounded-lg text-xs font-semibold border border-slate-200 dark:border-slate-700 flex items-center gap-1">
+              <i data-lucide="flag" class="w-3.5 h-3.5"></i>
+              <span id="examFlagLabel">Flag</span>
+            </button>
+          </div>
+
+          <h2 id="examQuestionText" class="text-base sm:text-lg font-semibold leading-relaxed"></h2>
+          <div id="examOptionsList" class="grid grid-cols-1 gap-2"></div>
+
+          <div class="pt-2 flex items-center justify-between">
+            <button type="button" id="btnExamPrev" class="p-2 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-40">
+              <i data-lucide="chevron-left" class="w-4 h-4"></i>
+            </button>
+            <button type="button" id="btnExamNext" class="p-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white disabled:opacity-40">
+              <i data-lucide="chevron-right" class="w-4 h-4"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4 shadow-sm space-y-3">
+          <div class="flex items-center justify-between">
+            <span id="examTimerDisplay" class="font-mono font-bold text-base text-indigo-600 dark:text-indigo-400">60:00</span>
+            <div class="text-xs font-mono text-slate-500">
+              <span id="examAnsweredCount">0/50</span> · ⚑ <span id="examFlaggedCount">0</span>
+            </div>
+          </div>
+
+          <div id="examPaletteGrid" class="grid grid-cols-5 sm:grid-cols-8 md:grid-cols-5 gap-1 max-h-56 overflow-y-auto"></div>
+
+          <div class="flex gap-2 pt-1">
+            <button type="button" id="btnSubmitExamRequest" class="flex-1 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs">Submit</button>
+            <button type="button" id="btnCancelExam" class="px-3 py-2 rounded-xl text-xs font-semibold text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800">Quit</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Exam Results -->
+      <div id="examResultPanel" class="hidden space-y-4">
+        <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 shadow-sm flex flex-wrap items-center justify-between gap-4">
+          <div>
+            <h2 id="examResultScoreHeadline" class="text-2xl font-extrabold">8.6 / 10</h2>
+            <p id="examResultMeta" class="text-xs font-mono text-slate-500 mt-0.5"></p>
+          </div>
+          <div class="flex gap-2">
+            <button type="button" id="btnPracticeWrongExam" class="px-3.5 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-semibold text-xs">Learn Missed</button>
+            <button type="button" id="btnNewExamSetup" class="px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs">New Test</button>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-1.5">
+          <button type="button" data-exam-review-filter="all" class="exam-rev-pill px-3 py-1 rounded-lg text-xs font-semibold">All</button>
+          <button type="button" data-exam-review-filter="wrong" class="exam-rev-pill px-3 py-1 rounded-lg text-xs font-semibold">Missed</button>
+          <button type="button" data-exam-review-filter="flagged" class="exam-rev-pill px-3 py-1 rounded-lg text-xs font-semibold">Flagged</button>
+        </div>
+
+        <div id="examReviewCardsList" class="space-y-2.5"></div>
+      </div>
+    </section>
+
+    <!-- ==================== VIEW 3: BROWSE LIST ==================== -->
+    <section id="viewBrowse" class="hidden space-y-3">
+      <div class="flex items-center gap-2 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 px-3 py-2">
+        <i data-lucide="search" class="w-4 h-4 text-slate-400 shrink-0"></i>
+        <input type="search" id="browseSearchInput" placeholder="Search 200 questions..." class="flex-1 bg-transparent text-sm focus:outline-none" />
+        <label class="inline-flex items-center gap-1.5 text-xs font-medium text-slate-500 cursor-pointer select-none shrink-0">
+          <input type="checkbox" id="chkBrowseHideAnswers" class="rounded text-indigo-600" />
+          <span>Hide Ans</span>
+        </label>
+        <span id="browseResultCount" class="text-xs font-mono text-slate-400 shrink-0 pl-1">200</span>
+      </div>
+
+      <div id="browseCardsContainer" class="space-y-2.5"></div>
+
+      <div id="browsePaginationBar" class="flex items-center justify-between px-1 pt-1">
+        <button type="button" id="btnBrowsePrevPage" class="p-2 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 disabled:opacity-40">
+          <i data-lucide="chevron-left" class="w-4 h-4"></i>
+        </button>
+        <span id="browsePageIndicator" class="text-xs font-mono text-slate-500">1 / 14</span>
+        <button type="button" id="btnBrowseNextPage" class="p-2 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 disabled:opacity-40">
+          <i data-lucide="chevron-right" class="w-4 h-4"></i>
+        </button>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Minimal Footer -->
+  <footer class="py-4 text-center text-[11px] text-slate-400 space-x-3">
+    <a href="https://quizlet.com/1238874494/rel301m-exam-rl-flashcards/" target="_blank" rel="noopener noreferrer" class="hover:text-indigo-500">Exam RL ↗</a>
+    <span>·</span>
+    <a href="https://quizlet.com/1239317353/rel301m-reinforcement-learning-su25-flash-cards/" target="_blank" rel="noopener noreferrer" class="hover:text-indigo-500">SU25 ↗</a>
+    <span>·</span>
+    <a href="https://quizlet.com/vn/1234867780/rel301m_sp26_fe_683174-flash-cards/" target="_blank" rel="noopener noreferrer" class="hover:text-indigo-500">SP26 ↗</a>
+    <span>·</span>
+    <a href="https://quizlet.com/vn/1234867796/rel301m_su26_fe_335344-flash-cards/" target="_blank" rel="noopener noreferrer" class="hover:text-indigo-500">SU26 ↗</a>
+  </footer>
+
+  <!-- MODAL: LEARN OPTIONS (Quizlet-style Options Menu) -->
+  <div id="modalOptions" class="hidden fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 max-w-sm w-full p-5 shadow-xl space-y-4">
+      <div class="flex items-center justify-between">
+        <h3 class="font-bold text-sm">Learn Options</h3>
+        <button type="button" id="btnCloseOptionsModal" class="p-1 rounded-lg text-slate-400 hover:text-slate-700">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <div class="space-y-3 text-xs sm:text-sm">
+        <label class="flex items-center justify-between cursor-pointer select-none">
+          <span class="font-medium">Auto-advance on correct</span>
+          <input type="checkbox" id="chkLearnAutoNext" class="rounded text-indigo-600 focus:ring-indigo-500" />
+        </label>
+
+        <label class="flex items-center justify-between cursor-pointer select-none">
+          <span class="font-medium">Shuffle options (1–4)</span>
+          <input type="checkbox" id="chkLearnShuffleOpts" class="rounded text-indigo-600 focus:ring-indigo-500" />
+        </label>
+
+        <div class="flex items-center justify-between">
+          <span class="font-medium">Goal to master</span>
+          <select id="selMasteryGoal" class="rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 px-2.5 py-1 text-xs font-semibold">
+            <option value="2">2x Correct (Quizlet)</option>
+            <option value="1">1x Correct (Fast)</option>
+          </select>
+        </div>
+
+        <div class="flex items-center justify-between">
+          <span class="font-medium">Round length</span>
+          <select id="selRoundSize" class="rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 px-2.5 py-1 text-xs font-semibold">
+            <option value="7">7 questions</option>
+            <option value="10">10 questions</option>
+            <option value="15">15 questions</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: BACKUP -->
+  <div id="modalBackup" class="hidden fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 max-w-md w-full p-5 shadow-xl space-y-3">
+      <div class="flex items-center justify-between">
+        <h3 class="font-bold text-sm">Backup / Restore JSON</h3>
+        <button type="button" id="btnCloseBackupModal" class="p-1 rounded-lg text-slate-400 hover:text-slate-700">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+      <textarea id="txtBackupJson" rows="4" class="w-full font-mono text-xs p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:outline-none"></textarea>
+      <div class="flex items-center justify-between gap-2">
+        <div class="flex gap-1.5">
+          <button type="button" id="btnCopyBackupJson" class="px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-xs font-semibold">Copy</button>
+          <button type="button" id="btnDownloadBackupJson" class="px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-xs font-semibold">Download</button>
+        </div>
+        <button type="button" id="btnRestoreBackupJson" class="px-3.5 py-1.5 rounded-lg bg-indigo-600 text-white text-xs font-semibold">Restore</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: CONFIRM -->
+  <div id="modalConfirm" class="hidden fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 max-w-sm w-full p-5 shadow-xl space-y-3">
+      <h3 id="modalConfirmTitle" class="font-bold text-base">Confirm</h3>
+      <p id="modalConfirmMessage" class="text-xs sm:text-sm text-slate-500 dark:text-slate-400"></p>
+      <div class="flex justify-end gap-2 pt-1">
+        <button type="button" id="btnModalConfirmCancel" class="px-3.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-semibold">Cancel</button>
+        <button type="button" id="btnModalConfirmOk" class="px-3.5 py-1.5 rounded-xl bg-rose-600 text-white text-xs font-semibold">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toastBanner" class="hidden fixed bottom-4 right-4 z-50 px-3.5 py-2 rounded-xl bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 text-xs font-semibold shadow-lg"></div>
+
+  <script>
+    const STUDY_DATA = {"sets": [{"id": "exam_rl", "title": "REL301m Exam RL Flashcards", "shortTitle": "Exam RL", "category": "Reinforcement Learning", "url": "https://quizlet.com/1238874494/rel301m-exam-rl-flashcards/", "badge": "RL Exam", "description": "50 câu hỏi trắc nghiệm tổng hợp kiến thức Reinforcement Learning kèm giải thích ngắn gọn."}, {"id": "su25_rl", "title": "REL301m Reinforcement Learning SU25", "shortTitle": "SU25", "category": "Reinforcement Learning", "url": "https://quizlet.com/1239317353/rel301m-reinforcement-learning-su25-flash-cards/", "badge": "SU25", "description": "50 câu hỏi trắc nghiệm môn REL301m kỳ SU25 kèm giải thích tiếng Việt."}, {"id": "sp26_fe", "title": "REL301m_SP26_FE_683174", "shortTitle": "SP26", "category": "Reinforcement Learning", "url": "https://quizlet.com/vn/1234867780/rel301m_sp26_fe_683174-flash-cards/", "badge": "SP26 FE", "description": "50 câu hỏi đề thi Final Exam kỳ SP26 mã 683174 môn REL301m (Reinforcement Learning)."}, {"id": "su26_fe", "title": "REL301m_SU26_FE_335344", "shortTitle": "SU26", "category": "Reinforcement Learning", "url": "https://quizlet.com/vn/1234867796/rel301m_su26_fe_335344-flash-cards/", "badge": "SU26 FE", "description": "50 câu hỏi đề thi Final Exam kỳ SU26 mã 335344 môn REL301m (Reinforcement Learning)."}], "cards": [{"id": "exam_rl_1", "setId": "exam_rl", "setTitle": "Exam RL", "num": 1, "question": "In temporal-difference learning, what does \"temporal\" refer to?", "options": {"A": "Time series analysis", "B": "Sequential decision making", "C": "Spatial dimensions", "D": "Dimensionality reduction"}, "answer": "B", "explanation": "Temporal-difference learning deals with sequential decision making over time steps.", "sourceUrl": "https://quizlet.com/1238874494/rel301m-exam-rl-flashcards/"}, {"id": "exam_rl_2", "setId": "exam_rl", "setTitle": "Exam RL", "num": 2, "question": "In which type of environment is Expected Sarsa generally more stable than Q-learning?", "options": {"A": "Deterministic environments", "B": "Stochastic environments", "C": "Fully observable environments", "D": "Static environments"}, "answer": "B", "explanation": "Expected Sarsa accounts for the probability distribution of possible actions, making it more stable under stochasticity.", "sourceUrl": "https://quizlet.com/1238874494/rel301m-exam-rl-flashcards/"}, {"id": "exam_rl_3", "setId": "exam_rl", "setTitle": "Exam RL", "num": 3, "question": "In Monte Carlo control, which exploration method considers uncertainty by sampling from a posterior distribution of action values?", "options": {"A": "UCB", "B": "ε-greedy", "C": "Thompson Sampling", "D": "Boltzmann Exploration"}, "answer": "C", "explanation": "Thompson Sampling explicitly samples from a posterior distribution of parameters.", "sourceUrl": "https://quizlet.com/1238874494/rel301m-exam-rl-flashcards/"}, {"id": "exam_rl_4", "setId": "exam_rl", "setTitle": "Exam RL", "num": 4, "question": "In the Sarsa algorithm, what does the acronym \"Sarsa\" represent?", "options": {"A": "State, Action, Reward, State, Action", "B": "State, Action, Reward, Next State, Action", "C": "State, Action, Reward, Next Action, State", "D": "State, Action, Result, State, Action"}, "answer": "B", "explanation": "SARSA stands for State, Action, Reward, Next State, Action.", "sourceUrl": "https://quizlet.com/1238874494/rel301m-exam-rl-flashcards/"}, {"id": "exam_rl_5", "setId": "exam_rl", "setTitle": "Exam RL", "num": 5, "question": "Which technique improves the accuracy of models with biased predictions?", "options": {"A": "Introducing more bias", "B": "Regularization to penalize overly complex models", "C": "Ignoring bias and relying solely on historical data", "D": "Using only one data source"}, "answer": "B", "explanation": "Regularization helps control overfitting and manage the bias-variance trade-off.", "sourceUrl": "https://quizlet.com/1238874494/rel301m-exam-rl-flashcards/"}, {"id": "exam_rl_6", "setId": "exam_rl", "setTitle": "Exam RL", "num": 6, "question": "What is the primary difference between Sarsa and Expected Sarsa?", "options": {"A": "Sarsa uses the maximum Q-value of the next state", "B": "Expected Sarsa uses the maximum Q-value of the next state", "C": "Sarsa uses a sample of the previous state's Q-value", "D": "Expected Sarsa uses the expected value of the next state's Q-value"}, "answer": "D", "explanation": "Expected Sarsa computes the expected value under the current policy rather than taking a single sample max.", "sourceUrl": "https://quizlet.com/1238874494/rel301m-exam-rl-flashcards/"}, {"id": "exam_rl_7", "setId": "exam_rl", "setTitle": "Exam RL", "num": 7, "question": "In Monte Carlo prediction, what is the purpose of policy π?", "options": {"A": "Determine the sequence of states", "B": "Generate episodes", "C": "Update the value function", "D": "Ensure convergence"}, "answer": "B", "explanation": "Policy π is followed to generate complete episodes of experience.", "sourceUrl": "https://quizlet.com/1238874494/rel301m-exam-rl-flashcards/"}, {"id": "exam_rl_8", "setId": "exam_rl", "setTitle": "Exam RL", "num": 8, "question": "What distinguishes Monte Carlo methods from TD methods?", "options": {"A": "MC updates from entire episode, TD from current steps", "B": "MC requires model, TD does not", "C": "MC is more computationally expensive", "D": "MC cannot be used for online learning"}, "answer": "A", "explanation": "Monte Carlo waits until the end of an episode for returns, whereas TD bootstraps from current steps.", "sourceUrl": "https://quizlet.com/1238874494/rel301m-exam-rl-flashcards/"}, {"id": "exam_rl_9", "setId": "exam_rl", "setTitle": "Exam RL", "num": 9, "question": "In off-policy Monte Carlo prediction, how is the return corrected?", "options": {"A": "Averaging all returns without adjustment", "B": "Importance sampling ratio", "C": "Discarding behavior policy returns", "D": "Discount factor"}, "answer": "B", "explanation": "Importance sampling weights returns to account for the difference between target and behavior policies.", "sourceUrl": "https://quizlet.com/1238874494/rel301m-exam-rl-flashcards/"}, {"id": "exam_rl_10", "setId": "exam_rl", "setTitle": "Exam RL", "num": 10, "question": "Main advantage of temporal-difference learning over other reinforcement learning methods?", "options": {"A": "Less computational resources", "B": "Can handle non-stationary environments", "C": "Doesn't rely on rewards", "D": "Guarantees optimal policy convergence"}, "answer": "B", "explanation": "Also learns online without waiting for episode termination.", "sourceUrl": "https://quizlet.com/1238874494/rel301m-exam-rl-flashcards/"}, {"id": "exam_rl_11", "setId": "exam_rl", "setTitle": "Exam RL", "num": 11, "question": "In Expected Sarsa, what does γ represent?", "options": {"A": "Learning rate", "B": "Discount factor", "C": "Exploration rate", "D": "Update rate"}, "answer": "B", "explanation": "γ (gamma) represents the discount factor for future rewards.", "sourceUrl": "https://quizlet.com/1238874494/rel301m-exam-rl-flashcards/"}, {"id": "exam_rl_12", "setId": "exam_rl", "setTitle": "Exam RL", "num": 12, "question": "Common technique used by distribution models in RL to represent uncertainty?", "options": {"A": "Q-learning", "B": "Bayesian inference", "C": "Temporal difference learning", "D": "Deep Q-networks"}, "answer": "B", "explanation": "Bayesian methods explicitly model and represent uncertainty.", "sourceUrl": "https://quizlet.com/1238874494/rel301m-exam-rl-flashcards/"}, {"id": "exam_rl_13", "setId": "exam_rl", "setTitle": "Exam RL", "num": 13, "question": "What advantage does Temporal Difference offer in terms of accessibility?", "options": {"A": "Restriction to specific devices", "B": "Fixed location for learning", "C": "Accessible anytime, anywhere", "D": "Limited availability of course materials"}, "answer": "C", "explanation": "Note on Quizlet set: This question appears out of domain for RL and relates to e-learning accessibility.", "sourceUrl": "https://quizlet.com/1238874494/rel301m-exam-rl-flashcards/"}, {"id": "exam_rl_14", "setId": "exam_rl", "setTitle": "Exam RL", "num": 14, "question": "First step in conducting a Monte Carlo simulation?", "options": {"A": "Running simulation", "B": "Analyzing results", "C": "Defining model and inputs", "D": "Calculating average outcomes"}, "answer": "C", "explanation": "A simulation must start by defining the model and input parameters.", "sourceUrl": "https://quizlet.com/1238874494/rel301m-exam-rl-flashcards/"}, {"id": "exam_rl_15", "setId": "exam_rl", "setTitle": "Exam RL", "num": 15, "question": "Main purpose of epsilon-soft policies in Monte Carlo control?", "options": {"A": "Ensure deterministic outcomes", "B": "Eliminate need for exploring starts", "C": "Reduce computational complexity", "D": "Guarantee optimal policy convergence"}, "answer": "B", "explanation": "Epsilon-soft policies ensure non-zero probability for all actions everywhere, removing the exploring starts requirement.", "sourceUrl": "https://quizlet.com/1238874494/rel301m-exam-rl-flashcards/"}, {"id": "exam_rl_16", "setId": "exam_rl", "setTitle": "Exam RL", "num": 16, "question": "Potential drawback of Monte Carlo prediction?", "options": {"A": "Requires a model", "B": "Only deterministic environments", "C": "May require many episodes for accurate estimates", "D": "Not suitable for on-policy learning"}, "answer": "C", "explanation": "Due to high variance, MC methods often require extensive data/episodes.", "sourceUrl": "https://quizlet.com/1238874494/rel301m-exam-rl-flashcards/"}, {"id": "exam_rl_17", "setId": "exam_rl", "setTitle": "Exam RL", "num": 17, "question": "Which algorithm is more computationally expensive?", "options": {"A": "Dyna-Q", "B": "Q-learning", "C": "Both equally", "D": "Depends on problem domain"}, "answer": "D", "explanation": "Dyna-Q adds model-based planning steps, which can increase computational cost per step depending on the domain.", "sourceUrl": "https://quizlet.com/1238874494/rel301m-exam-rl-flashcards/"}, {"id": "exam_rl_18", "setId": "exam_rl", "setTitle": "Exam RL", "num": 18, "question": "How do cosmic radiation and space debris affect star exploration missions?", "options": {"A": "Not significant", "B": "Enhance data collection", "C": "Pose risks to spacecraft and human explorers", "D": "Propel spacecraft faster"}, "answer": "C", "explanation": "Note on Quizlet set: Out-of-domain question included in the exam set.", "sourceUrl": "https://quizlet.com/1238874494/rel301m-exam-rl-flashcards/"}, {"id": "exam_rl_19", "setId": "exam_rl", "setTitle": "Exam RL", "num": 19, "question": "In TD(0), how is state-value function updated?", "options": {"A": "Derivative of reward function", "B": "Bellman equation", "C": "Averaging rewards over time", "D": "Randomly selecting new state values"}, "answer": "B", "explanation": "TD(0) uses the one-step bootstrapping target derived from the Bellman equation.", "sourceUrl": "https://quizlet.com/1238874494/rel301m-exam-rl-flashcards/"}, {"id": "exam_rl_20", "setId": "exam_rl", "setTitle": "Exam RL", "num": 20, "question": "Why does Q-learning remain off-policy when behavior is ε-greedy?", "options": {"A": "Ignores next state", "B": "Updates toward greedy value of next state rather than action actually selected by behavior policy", "C": "Requires complete environment model", "D": "Waits until episode ends to compute exact optimal return"}, "answer": "B", "explanation": "", "sourceUrl": "https://quizlet.com/1238874494/rel301m-exam-rl-flashcards/"}, {"id": "exam_rl_21", "setId": "exam_rl", "setTitle": "Exam RL", "num": 21, "question": "Which method dynamically alters reward estimates based on uncertainty?", "options": {"A": "Thompson Sampling", "B": "Epsilon-Greedy", "C": "Q-Learning", "D": "Upper Confidence Bound"}, "answer": "D", "explanation": "UCB adds an uncertainty term to action values.", "sourceUrl": "https://quizlet.com/1238874494/rel301m-exam-rl-flashcards/"}, {"id": "exam_rl_22", "setId": "exam_rl", "setTitle": "Exam RL", "num": 22, "question": "How does Q-learning handle exploration-exploitation trade-off?", "options": {"A": "Fixed policy", "B": "Balancing known information and exploring new actions", "C": "Always highest Q-value", "D": "Random action selection"}, "answer": "B", "explanation": "Typically achieved via behavior policies like ε-greedy.", "sourceUrl": "https://quizlet.com/1238874494/rel301m-exam-rl-flashcards/"}, {"id": "exam_rl_23", "setId": "exam_rl", "setTitle": "Exam RL", "num": 23, "question": "What happens to contribution of initial Q value as more data is collected?", "options": {"A": "Increases significantly", "B": "Remains constant", "C": "Decreases exponentially", "D": "Becomes irrelevant"}, "answer": "C", "explanation": "Contribution diminishes over time in incremental step-size formulations.", "sourceUrl": "https://quizlet.com/1238874494/rel301m-exam-rl-flashcards/"}, {"id": "exam_rl_24", "setId": "exam_rl", "setTitle": "Exam RL", "num": 24, "question": "Common strategy to balance exploration and exploitation?", "options": {"A": "Supervised learning", "B": "Epsilon-Greedy", "C": "Overfitting", "D": "Cross-validation"}, "answer": "B", "explanation": "Epsilon-greedy is a standard, simple strategy for balancing exploration and exploitation.", "sourceUrl": "https://quizlet.com/1238874494/rel301m-exam-rl-flashcards/"}, {"id": "exam_rl_25", "setId": "exam_rl", "setTitle": "Exam RL", "num": 25, "question": "Role of exploration strategy in policy gradient methods?", "options": {"A": "Maximize immediate rewards", "B": "Regulate learning rate", "C": "Encourage exploration of unfamiliar states", "D": "Minimize variance of gradient estimates"}, "answer": "C", "explanation": "Encourages exploration of unfamiliar states to avoid suboptimal local optima.", "sourceUrl": "https://quizlet.com/1238874494/rel301m-exam-rl-flashcards/"}, {"id": "exam_rl_26", "setId": "exam_rl", "setTitle": "Exam RL", "num": 26, "question": "Which method combines policy evaluation and policy improvement iteratively?", "options": {"A": "Monte Carlo methods", "B": "Temporal Difference learning", "C": "Policy Gradient methods", "D": "Actor-Critic methods"}, "answer": "D", "explanation": "Actor-Critic methods (as well as Generalized Policy Iteration across DP, MC, and TD) combine evaluation and improvement.", "sourceUrl": "https://quizlet.com/1238874494/rel301m-exam-rl-flashcards/"}, {"id": "exam_rl_27", "setId": "exam_rl", "setTitle": "Exam RL", "num": 27, "question": "Which algorithm estimates action value using a model of environment?", "options": {"A": "Q-learning", "B": "SARSA", "C": "Monte Carlo Control", "D": "Dynamic Programming"}, "answer": "D", "explanation": "DP requires a complete model (transition probabilities and rewards).", "sourceUrl": "https://quizlet.com/1238874494/rel301m-exam-rl-flashcards/"}, {"id": "exam_rl_28", "setId": "exam_rl", "setTitle": "Exam RL", "num": 28, "question": "Which technique uses decreasing probability of random actions over time?", "options": {"A": "Q-Learning", "B": "Epsilon-Greedy", "C": "Softmax", "D": "Thompson Sampling"}, "answer": "B", "explanation": "Epsilon-Greedy with epsilon decay decreases random exploration probability over time.", "sourceUrl": "https://quizlet.com/1238874494/rel301m-exam-rl-flashcards/"}, {"id": "exam_rl_29", "setId": "exam_rl", "setTitle": "Exam RL", "num": 29, "question": "Core principle behind Bellman equation?", "options": {"A": "Principle of optimality", "B": "Principle of duality", "C": "Principle of marginal returns", "D": "Principle of uncertainty"}, "answer": "A", "explanation": "Dynamic programming and Bellman equations rely on Bellman's principle of optimality.", "sourceUrl": "https://quizlet.com/1238874494/rel301m-exam-rl-flashcards/"}, {"id": "exam_rl_30", "setId": "exam_rl", "setTitle": "Exam RL", "num": 30, "question": "What happens to value of reward consistently provided regardless of behavior?", "options": {"A": "Increases", "B": "Decreases", "C": "Remains same", "D": "Becomes unpredictable"}, "answer": "C", "explanation": "", "sourceUrl": "https://quizlet.com/1238874494/rel301m-exam-rl-flashcards/"}, {"id": "exam_rl_31", "setId": "exam_rl", "setTitle": "Exam RL", "num": 31, "question": "Common strategy balancing exploration and exploitation?", "options": {"A": "Thompson Sampling", "B": "Gradient Descent", "C": "Random Walk", "D": "Cross-Validation"}, "answer": "A", "explanation": "", "sourceUrl": "https://quizlet.com/1238874494/rel301m-exam-rl-flashcards/"}, {"id": "exam_rl_32", "setId": "exam_rl", "setTitle": "Exam RL", "num": 32, "question": "Why is losing balance riding a bike relevant to RL?", "options": {"A": "Immediate feedback always necessary", "B": "Past experiences influence future decisions", "C": "Importance of avoiding risks", "D": "All actions lead to negative outcomes"}, "answer": "B", "explanation": "", "sourceUrl": "https://quizlet.com/1238874494/rel301m-exam-rl-flashcards/"}, {"id": "exam_rl_33", "setId": "exam_rl", "setTitle": "Exam RL", "num": 33, "question": "Which task type typically requires sustained effort over time?", "options": {"A": "Episodic", "B": "Continuing", "C": "Both", "D": "Neither"}, "answer": "B", "explanation": "Continuing tasks run indefinitely without a distinct endpoint.", "sourceUrl": "https://quizlet.com/1238874494/rel301m-exam-rl-flashcards/"}, {"id": "exam_rl_34", "setId": "exam_rl", "setTitle": "Exam RL", "num": 34, "question": "Primary role of a reward in RL?", "options": {"A": "Feedback on actions", "B": "Store past actions", "C": "Initialize state", "D": "Determine learning speed"}, "answer": "A", "explanation": "Rewards provide immediate numerical feedback on how good an action was.", "sourceUrl": "https://quizlet.com/1238874494/rel301m-exam-rl-flashcards/"}, {"id": "exam_rl_35", "setId": "exam_rl", "setTitle": "Exam RL", "num": 35, "question": "Effect of high discrimination ability on accuracy in learning?", "options": {"A": "Decreases learning efficiency", "B": "Frequent recall errors", "C": "Enhances precision of responses", "D": "Reduces generalization"}, "answer": "C", "explanation": "", "sourceUrl": "https://quizlet.com/1238874494/rel301m-exam-rl-flashcards/"}, {"id": "exam_rl_36", "setId": "exam_rl", "setTitle": "Exam RL", "num": 36, "question": "Main advantage of linear function approximation in RL?", "options": {"A": "Perfect accuracy", "B": "Computationally inexpensive and easy to implement", "C": "Ensures optimal convergence", "D": "Eliminates exploration"}, "answer": "B", "explanation": "", "sourceUrl": "https://quizlet.com/1238874494/rel301m-exam-rl-flashcards/"}, {"id": "exam_rl_37", "setId": "exam_rl", "setTitle": "Exam RL", "num": 37, "question": "In Semi-Gradient TD, typical approach to updating parameters?", "options": {"A": "Full gradient", "B": "Stochastic gradient of value function", "C": "Bellman error multiplied by eligibility trace", "D": "Monte Carlo estimate"}, "answer": "B", "explanation": "", "sourceUrl": "https://quizlet.com/1238874494/rel301m-exam-rl-flashcards/"}, {"id": "exam_rl_38", "setId": "exam_rl", "setTitle": "Exam RL", "num": 38, "question": "What does Critic in Actor-Critic estimate?", "options": {"A": "State-action value function", "B": "Probability distribution of actions", "C": "Reward function", "D": "Discounted cumulative reward"}, "answer": "A", "explanation": "Estimates state-action value function (or state value function).", "sourceUrl": "https://quizlet.com/1238874494/rel301m-exam-rl-flashcards/"}, {"id": "exam_rl_39", "setId": "exam_rl", "setTitle": "Exam RL", "num": 39, "question": "In Sarsa with function approximation, what updates weights?", "options": {"A": "Random selection", "B": "Gradient descent", "C": "Tabular methods", "D": "Fixed weights"}, "answer": "B", "explanation": "Function approximation uses gradient descent to adjust weights.", "sourceUrl": "https://quizlet.com/1238874494/rel301m-exam-rl-flashcards/"}, {"id": "exam_rl_40", "setId": "exam_rl", "setTitle": "Exam RL", "num": 40, "question": "What happens as softmax temperature approaches infinity?", "options": {"A": "More deterministic", "B": "More stochastic", "C": "Completely random", "D": "Independent of state"}, "answer": "C", "explanation": "High temperature flattens the Boltzmann distribution into a uniform random choice.", "sourceUrl": "https://quizlet.com/1238874494/rel301m-exam-rl-flashcards/"}, {"id": "exam_rl_41", "setId": "exam_rl", "setTitle": "Exam RL", "num": 41, "question": "Primary difference between TD and Monte Carlo?", "options": {"A": "TD model-free, MC model-based", "B": "TD bootstraps, MC uses full episode returns", "C": "TD updates at episode end, MC at each step", "D": "TD uses state aggregation, MC does not"}, "answer": "B", "explanation": "", "sourceUrl": "https://quizlet.com/1238874494/rel301m-exam-rl-flashcards/"}, {"id": "exam_rl_42", "setId": "exam_rl", "setTitle": "Exam RL", "num": 42, "question": "Which method is generally applicable and easy to use with function approximation?", "options": {"A": "Monte Carlo methods", "B": "Epsilon greedy", "C": "Q-learning", "D": "Policy gradient"}, "answer": "C", "explanation": "Q-learning (and temporal difference methods) are commonly used with function approximation.", "sourceUrl": "https://quizlet.com/1238874494/rel301m-exam-rl-flashcards/"}, {"id": "exam_rl_43", "setId": "exam_rl", "setTitle": "Exam RL", "num": 43, "question": "In Actor-Critic with Softmax Policies, how is action chosen?", "options": {"A": "Highest probability", "B": "Randomly sampled from distribution", "C": "Lowest probability", "D": "Maximum advantage"}, "answer": "B", "explanation": "", "sourceUrl": "https://quizlet.com/1238874494/rel301m-exam-rl-flashcards/"}, {"id": "exam_rl_44", "setId": "exam_rl", "setTitle": "Exam RL", "num": 44, "question": "How does generalization benefit learning?", "options": {"A": "Apply learned knowledge to new varied situations", "B": "Restrict knowledge to specific contexts", "C": "Minimize chances of mistakes", "D": "Reduce need for practice"}, "answer": "A", "explanation": "", "sourceUrl": "https://quizlet.com/1238874494/rel301m-exam-rl-flashcards/"}, {"id": "exam_rl_45", "setId": "exam_rl", "setTitle": "Exam RL", "num": 45, "question": "Primary goal of coarse coding?", "options": {"A": "Minimize number of states", "B": "Reduce computational complexity using fewer resources", "C": "Generalize state representation using overlapping features", "D": "Ensure exact state representation"}, "answer": "C", "explanation": "", "sourceUrl": "https://quizlet.com/1238874494/rel301m-exam-rl-flashcards/"}, {"id": "exam_rl_46", "setId": "exam_rl", "setTitle": "Exam RL", "num": 46, "question": "Common initialization strategy for neural network weights?", "options": {"A": "All ones", "B": "Randomly sample normal distribution with small variance", "C": "Fixed weights for all neurons", "D": "Based on previous training"}, "answer": "B", "explanation": "Or Xavier/He initialization.", "sourceUrl": "https://quizlet.com/1238874494/rel301m-exam-rl-flashcards/"}, {"id": "exam_rl_47", "setId": "exam_rl", "setTitle": "Exam RL", "num": 47, "question": "What does exploration in Gaussian policies rely on?", "options": {"A": "Random noise added to mean action", "B": "Uniform random sampling", "C": "Fixed exploration rate", "D": "Adaptive exploration based on reward feedback"}, "answer": "A", "explanation": "", "sourceUrl": "https://quizlet.com/1238874494/rel301m-exam-rl-flashcards/"}, {"id": "exam_rl_48", "setId": "exam_rl", "setTitle": "Exam RL", "num": 48, "question": "Key advantage of Semi-Gradient TD over Gradient TD in policy evaluation?", "options": {"A": "Requires fewer computational resources", "B": "Converges faster", "C": "More stable with function approximation", "D": "Guarantees optimal convergence"}, "answer": "A", "explanation": "Requires fewer computational resources and offers simpler implementation.", "sourceUrl": "https://quizlet.com/1238874494/rel301m-exam-rl-flashcards/"}, {"id": "exam_rl_49", "setId": "exam_rl", "setTitle": "Exam RL", "num": 49, "question": "What does average reward in RL represent?", "options": {"A": "Total reward during an episode", "B": "Reward at each step", "C": "Mean reward over multiple episodes", "D": "Maximum reward achievable"}, "answer": "C", "explanation": "Mean reward over multiple episodes (or per-step average in continuing tasks).", "sourceUrl": "https://quizlet.com/1238874494/rel301m-exam-rl-flashcards/"}, {"id": "exam_rl_50", "setId": "exam_rl", "setTitle": "Exam RL", "num": 50, "question": "Technique alongside epsilon-greedy to ensure epsilon decreases appropriately over time?", "options": {"A": "Exponential decay", "B": "Linear scaling", "C": "Fixed epsilon value", "D": "Random adjustment"}, "answer": "A", "explanation": "", "sourceUrl": "https://quizlet.com/1238874494/rel301m-exam-rl-flashcards/"}, {"id": "su25_rl_1", "setId": "su25_rl", "setTitle": "SU25", "num": 1, "question": "Which algorithm is commonly used for off-policy learning in reinforcement learning?", "options": {"A": "Q-learning", "B": "SARSA", "C": "Deep Q-Network (DQN)", "D": "Policy Gradient"}, "answer": "A", "explanation": "Q-learning. DQN (C) cũng là off-policy, nên câu này có hai lựa chọn hợp lý.", "sourceUrl": "https://quizlet.com/1239317353/rel301m-reinforcement-learning-su25-flash-cards/"}, {"id": "su25_rl_2", "setId": "su25_rl", "setTitle": "SU25", "num": 2, "question": "What is one advantage of Temporal Difference (TD) methods over Dynamic Programming (DP) and Monte Carlo methods?", "options": {"A": "TD methods are guaranteed to converge to the optimal solution.", "B": "TD methods do not require knowledge of the complete environment dynamics.", "C": "TD methods are computationally less expensive.", "D": "TD methods can handle only episodic tasks efficiently."}, "answer": "B", "explanation": "TD học từ trải nghiệm mà không cần mô hình động lực đầy đủ (phân biệt với DP), đồng thời cập nhật trước khi episode kết thúc (phân biệt với Monte Carlo).", "sourceUrl": "https://quizlet.com/1239317353/rel301m-reinforcement-learning-su25-flash-cards/"}, {"id": "su25_rl_3", "setId": "su25_rl", "setTitle": "SU25", "num": 3, "question": "What type of learning method is Monte Carlo prediction classified as?", "options": {"A": "Supervised learning", "B": "Unsupervised learning", "C": "Semi-supervised learning", "D": "Reinforcement learning"}, "answer": "D", "explanation": "Reinforcement learning.", "sourceUrl": "https://quizlet.com/1239317353/rel301m-reinforcement-learning-su25-flash-cards/"}, {"id": "su25_rl_4", "setId": "su25_rl", "setTitle": "SU25", "num": 4, "question": "Which of the following is a characteristic of temporal-difference learning algorithms?", "options": {"A": "They require labeled data for training.", "B": "They learn from delayed rewards.", "C": "They are only applicable in stationary environments.", "D": "They rely solely on a pre-defined set of rules."}, "answer": "B", "explanation": "Học từ phần thưởng đến trễ.", "sourceUrl": "https://quizlet.com/1239317353/rel301m-reinforcement-learning-su25-flash-cards/"}, {"id": "su25_rl_5", "setId": "su25_rl", "setTitle": "SU25", "num": 5, "question": "Which of the following statements about Monte Carlo methods is true?", "options": {"A": "Monte Carlo methods require knowledge of the environment's model.", "B": "Monte Carlo methods update action values incrementally during an episode.", "C": "Monte Carlo methods update action values only at the end of an episode.", "D": "Monte Carlo methods can only be applied to deterministic environments."}, "answer": "C", "explanation": "Monte Carlo cập nhật sau khi episode kết thúc, khi đã biết return.", "sourceUrl": "https://quizlet.com/1239317353/rel301m-reinforcement-learning-su25-flash-cards/"}, {"id": "su25_rl_6", "setId": "su25_rl", "setTitle": "SU25", "num": 6, "question": "Why is maintaining exploration important in Monte-Carlo methods?", "options": {"A": "To ensure rapid convergence", "B": "To prevent the algorithm from getting stuck in local optima", "C": "To reduce memory usage", "D": "To increase the speed of computation"}, "answer": "B", "explanation": "Khám phá giúp tránh mắc kẹt với hành động dưới tối ưu do ước lượng ban đầu.", "sourceUrl": "https://quizlet.com/1239317353/rel301m-reinforcement-learning-su25-flash-cards/"}, {"id": "su25_rl_7", "setId": "su25_rl", "setTitle": "SU25", "num": 7, "question": "Which of the following statements is true regarding the update rule of Expected Sarsa?", "options": {"A": "It only updates based on the greedy action", "B": "It updates based on a weighted sum of Q-values for all possible actions", "C": "It requires the entire model of the environment", "D": "It updates based on the worst possible action"}, "answer": "B", "explanation": "Expected SARSA lấy tổng các Q-value có trọng số theo xác suất hành động.", "sourceUrl": "https://quizlet.com/1239317353/rel301m-reinforcement-learning-su25-flash-cards/"}, {"id": "su25_rl_8", "setId": "su25_rl", "setTitle": "SU25", "num": 8, "question": "What is the primary objective of Random Tabular Q-planning in reinforcement learning?", "options": {"A": "To find the shortest path in a graph", "B": "To estimate the value function for a policy", "C": "To optimize the policy for better future rewards", "D": "To model the environment dynamics"}, "answer": "C", "explanation": "Dùng mô hình mô phỏng trải nghiệm để cập nhật Q và cải thiện chính sách.", "sourceUrl": "https://quizlet.com/1239317353/rel301m-reinforcement-learning-su25-flash-cards/"}, {"id": "su25_rl_9", "setId": "su25_rl", "setTitle": "SU25", "num": 9, "question": "What distinguishes Temporal Difference (TD) methods from Monte Carlo methods regarding the handling of incomplete episodes?", "options": {"A": "TD methods require complete episodes for updating values.", "B": "TD methods update values based on incomplete episodes.", "C": "TD methods cannot handle incomplete episodes efficiently.", "D": "TD methods do not rely on experiences for learning."}, "answer": "B", "explanation": "TD cập nhật được ngay khi episode chưa kết thúc.", "sourceUrl": "https://quizlet.com/1239317353/rel301m-reinforcement-learning-su25-flash-cards/"}, {"id": "su25_rl_10", "setId": "su25_rl", "setTitle": "SU25", "num": 10, "question": "How does Expected Sarsa reduce the variance in Q-value updates compared to Q-learning?", "options": {"A": "By using a fixed learning rate.", "B": "By averaging over all possible actions.", "C": "By always selecting the action with the highest Q-value.", "D": "By ignoring the reward signal."}, "answer": "B", "explanation": "Lấy kỳ vọng theo phân phối hành động kế tiếp (giảm phương sai so với SARSA lấy mẫu).", "sourceUrl": "https://quizlet.com/1239317353/rel301m-reinforcement-learning-su25-flash-cards/"}, {"id": "su25_rl_11", "setId": "su25_rl", "setTitle": "SU25", "num": 11, "question": "How can overfitting be addressed in machine learning models?", "options": {"A": "By reducing the complexity of the model", "B": "By increasing the complexity of the model", "C": "By ignoring the validation data", "D": "By introducing more noise into the training data"}, "answer": "A", "explanation": "Giảm độ phức tạp của mô hình.", "sourceUrl": "https://quizlet.com/1239317353/rel301m-reinforcement-learning-su25-flash-cards/"}, {"id": "su25_rl_12", "setId": "su25_rl", "setTitle": "SU25", "num": 12, "question": "In the SARSA algorithm, what role does the learning rate (α) play?", "options": {"A": "It determines how much new information overrides the old information.", "B": "It sets the probability of taking a random action.", "C": "It defines the discount factor for future rewards.", "D": "It specifies the exploration-exploitation trade-off."}, "answer": "A", "explanation": "Learning rate α quyết định mức thông tin mới thay đổi ước lượng cũ.", "sourceUrl": "https://quizlet.com/1239317353/rel301m-reinforcement-learning-su25-flash-cards/"}, {"id": "su25_rl_13", "setId": "su25_rl", "setTitle": "SU25", "num": 13, "question": "What is the primary purpose of Dyna Architecture?", "options": {"A": "To develop operating systems", "B": "To design scalable web servers", "C": "To model complex dynamic systems", "D": "To manage database transactions"}, "answer": "C", "explanation": "Dyna kết hợp học trực tiếp, học mô hình môi trường và lập kế hoạch từ mô hình đó.", "sourceUrl": "https://quizlet.com/1239317353/rel301m-reinforcement-learning-su25-flash-cards/"}, {"id": "su25_rl_14", "setId": "su25_rl", "setTitle": "SU25", "num": 14, "question": "What does Temporal Difference (TD) learning combine?", "options": {"A": "Monte Carlo methods and dynamic programming", "B": "Supervised learning and unsupervised learning", "C": "Gradient descent and stochastic gradient descent", "D": "Neural networks and decision trees"}, "answer": "A", "explanation": "Kết hợp học từ mẫu của Monte Carlo và cập nhật dựa vào ước lượng tiếp theo của DP.", "sourceUrl": "https://quizlet.com/1239317353/rel301m-reinforcement-learning-su25-flash-cards/"}, {"id": "su25_rl_15", "setId": "su25_rl", "setTitle": "SU25", "num": 15, "question": "In Q-learning, what role does the learning rate (α) play in the update rule?", "options": {"A": "It determines how much the current Q-value is updated.", "B": "It determines how often the policy is changed.", "C": "It sets the exploration rate.", "D": "It sets the discount factor for future rewards."}, "answer": "A", "explanation": "α xác định mức điều chỉnh Q hiện tại.", "sourceUrl": "https://quizlet.com/1239317353/rel301m-reinforcement-learning-su25-flash-cards/"}, {"id": "su25_rl_16", "setId": "su25_rl", "setTitle": "SU25", "num": 16, "question": "What is one of the main challenges when using distribution models in reinforcement learning?", "options": {"A": "High variance in action selection.", "B": "The need for large amounts of interaction data.", "C": "Difficulty in accurately modeling the environment's dynamics.", "D": "Slow convergence to the optimal policy."}, "answer": "C", "explanation": "Khó mô hình hóa chính xác động lực môi trường.", "sourceUrl": "https://quizlet.com/1239317353/rel301m-reinforcement-learning-su25-flash-cards/"}, {"id": "su25_rl_17", "setId": "su25_rl", "setTitle": "SU25", "num": 17, "question": "Which of the following is an advantage of off-policy learning?", "options": {"A": "It requires less computational resources", "B": "It guarantees convergence to the optimal policy", "C": "It allows learning from non-optimal behavior", "D": "It eliminates the need for exploration entirely"}, "answer": "C", "explanation": "Có thể học từ hành vi chưa tối ưu.", "sourceUrl": "https://quizlet.com/1239317353/rel301m-reinforcement-learning-su25-flash-cards/"}, {"id": "su25_rl_18", "setId": "su25_rl", "setTitle": "SU25", "num": 18, "question": "What is the main objective of the Q-learning algorithm?", "options": {"A": "To minimize the state-action pair values", "B": "To maximize the total reward over time", "C": "To minimize the exploration rate", "D": "To maximize the number of actions taken"}, "answer": "B", "explanation": "Tối đa hóa tổng phần thưởng kỳ vọng theo thời gian.", "sourceUrl": "https://quizlet.com/1239317353/rel301m-reinforcement-learning-su25-flash-cards/"}, {"id": "su25_rl_19", "setId": "su25_rl", "setTitle": "SU25", "num": 19, "question": "What does the \"difference\" in temporal-difference learning refer to?", "options": {"A": "The difference between rewards and penalties", "B": "The difference between observed and predicted values", "C": "The difference between input and output data", "D": "The difference between model parameters"}, "answer": "B", "explanation": "Sai số giữa mục tiêu TD và giá trị dự đoán hiện tại.", "sourceUrl": "https://quizlet.com/1239317353/rel301m-reinforcement-learning-su25-flash-cards/"}, {"id": "su25_rl_20", "setId": "su25_rl", "setTitle": "SU25", "num": 20, "question": "Which technique in reinforcement learning allows learning from historical data while following a different policy?", "options": {"A": "On-policy learning", "B": "Off-policy learning", "C": "Model-based learning", "D": "Temporal Difference learning"}, "answer": "B", "explanation": "Off-policy learning.", "sourceUrl": "https://quizlet.com/1239317353/rel301m-reinforcement-learning-su25-flash-cards/"}, {"id": "su25_rl_21", "setId": "su25_rl", "setTitle": "SU25", "num": 21, "question": "What does state aggregation involve in reinforcement learning?", "options": {"A": "Combining similar states into groups to reduce the dimensionality of the state space.", "B": "Separating dissimilar states to increase the granularity of the state space.", "C": "Ignoring certain states in the environment to simplify the learning process.", "D": "Converting continuous state spaces into discrete state spaces."}, "answer": "A", "explanation": "Gộp các trạng thái tương tự thành nhóm.", "sourceUrl": "https://quizlet.com/1239317353/rel301m-reinforcement-learning-su25-flash-cards/"}, {"id": "su25_rl_22", "setId": "su25_rl", "setTitle": "SU25", "num": 22, "question": "Which of the following is a characteristic of states represented by coarse coding?", "options": {"A": "Each state is represented by a unique, non-overlapping feature", "B": "States are represented by overlapping features, allowing for generalization", "C": "States are ignored and only actions are considered", "D": "Each state is treated as a separate entity with no generalization"}, "answer": "B", "explanation": "Dùng các đặc trưng chồng lấn để khái quát giữa các trạng thái.", "sourceUrl": "https://quizlet.com/1239317353/rel301m-reinforcement-learning-su25-flash-cards/"}, {"id": "su25_rl_23", "setId": "su25_rl", "setTitle": "SU25", "num": 23, "question": "What is a primary challenge when setting up Tile Coding?", "options": {"A": "Ensuring non-overlapping tiles", "B": "Selecting the number and size of tiles", "C": "Finding the right discount factor", "D": "Balancing exploration and exploitation"}, "answer": "B", "explanation": "Chọn số lượng và kích thước tile.", "sourceUrl": "https://quizlet.com/1239317353/rel301m-reinforcement-learning-su25-flash-cards/"}, {"id": "su25_rl_24", "setId": "su25_rl", "setTitle": "SU25", "num": 24, "question": "Which of the following methods is NOT typically used to learn the parameters of a Gaussian policy?", "options": {"A": "Maximum likelihood estimation", "B": "Policy gradient methods", "C": "Q-Learning", "D": "Actor-Critic methods"}, "answer": "C", "explanation": "Q-learning không trực tiếp học tham số của chính sách Gaussian.", "sourceUrl": "https://quizlet.com/1239317353/rel301m-reinforcement-learning-su25-flash-cards/"}, {"id": "su25_rl_25", "setId": "su25_rl", "setTitle": "SU25", "num": 25, "question": "When using Epsilon-greedy with function approximation, what role does the function approximator play?", "options": {"A": "It generates the random exploration rate", "B": "It approximates the Q-values for given states and actions", "C": "It determines when to switch between exploration and exploitation", "D": "It sets the value of epsilon"}, "answer": "B", "explanation": "Xấp xỉ Q cho từng cặp trạng thái-hành động.", "sourceUrl": "https://quizlet.com/1239317353/rel301m-reinforcement-learning-su25-flash-cards/"}, {"id": "su25_rl_26", "setId": "su25_rl", "setTitle": "SU25", "num": 26, "question": "What is a parameterized function in the context of reinforcement learning?", "options": {"A": "A function that takes no inputs and outputs a constant value.", "B": "A function that uses parameters (weights) to approximate another function.", "C": "A function that always returns the same value regardless of inputs.", "D": "A function that randomly changes its parameters during training."}, "answer": "B", "explanation": "Hàm dùng các tham số (trọng số) để xấp xỉ một hàm khác.", "sourceUrl": "https://quizlet.com/1239317353/rel301m-reinforcement-learning-su25-flash-cards/"}, {"id": "su25_rl_27", "setId": "su25_rl", "setTitle": "SU25", "num": 27, "question": "What role does the discount factor play in Semi-Gradient TD learning?", "options": {"A": "It determines the rate of eligibility trace decay", "B": "It controls the influence of future rewards on the updates", "C": "It sets the exploration-exploitation trade-off", "D": "It adjusts the learning rate dynamically during training"}, "answer": "B", "explanation": "Hệ số chiết khấu điều chỉnh ảnh hưởng của phần thưởng tương lai.", "sourceUrl": "https://quizlet.com/1239317353/rel301m-reinforcement-learning-su25-flash-cards/"}, {"id": "su25_rl_28", "setId": "su25_rl", "setTitle": "SU25", "num": 28, "question": "What is the significance of the average reward in reinforcement learning?", "options": {"A": "It indicates the maximum achievable reward in an environment", "B": "It helps in evaluating the performance of a learning agent over time", "C": "It represents the instantaneous reward received at each time step", "D": "It measures the variance in reward distribution"}, "answer": "B", "explanation": "Đánh giá hiệu suất dài hạn bằng phần thưởng trung bình trên mỗi bước.", "sourceUrl": "https://quizlet.com/1239317353/rel301m-reinforcement-learning-su25-flash-cards/"}, {"id": "su25_rl_29", "setId": "su25_rl", "setTitle": "SU25", "num": 29, "question": "In coarse coding, what is the effect of having overlapping regions?", "options": {"A": "It increases the complexity of the representation", "B": "It reduces the chance of generalization across similar states", "C": "It allows for better generalization and smoother function approximation", "D": "It eliminates the need for exploration in reinforcement learning"}, "answer": "C", "explanation": "Các vùng chồng lấn giúp khái quát tốt hơn và xấp xỉ mượt hơn.", "sourceUrl": "https://quizlet.com/1239317353/rel301m-reinforcement-learning-su25-flash-cards/"}, {"id": "su25_rl_30", "setId": "su25_rl", "setTitle": "SU25", "num": 30, "question": "Which of the following methods combines linear function approximation with policy improvement?", "options": {"A": "Policy Gradient Methods", "B": "Value Iteration", "C": "Actor-Critic Methods", "D": "Tabular Q-Learning"}, "answer": "C", "explanation": "Actor-Critic: Critic dùng hàm xấp xỉ tuyến tính và Actor cải thiện chính sách.", "sourceUrl": "https://quizlet.com/1239317353/rel301m-reinforcement-learning-su25-flash-cards/"}, {"id": "su25_rl_31", "setId": "su25_rl", "setTitle": "SU25", "num": 31, "question": "In which type of environments is state aggregation particularly useful?", "options": {"A": "Environments with a very small state space.", "B": "Environments with deterministic transitions.", "C": "Environments with a very large or continuous state space.", "D": "Environments with no reward structure."}, "answer": "C", "explanation": "Môi trường có không gian trạng thái rất lớn hoặc liên tục.", "sourceUrl": "https://quizlet.com/1239317353/rel301m-reinforcement-learning-su25-flash-cards/"}, {"id": "su25_rl_32", "setId": "su25_rl", "setTitle": "SU25", "num": 32, "question": "How are the actor and critic networks updated in Actor-Critic with Softmax Policies?", "options": {"A": "Only the actor network is updated", "B": "Only the critic network is updated", "C": "Both the actor and critic networks are updated simultaneously", "D": "The networks are updated independently"}, "answer": "C", "explanation": "Cả actor và critic đều được cập nhật trong quá trình học.", "sourceUrl": "https://quizlet.com/1239317353/rel301m-reinforcement-learning-su25-flash-cards/"}, {"id": "su25_rl_33", "setId": "su25_rl", "setTitle": "SU25", "num": 33, "question": "What role does the critic play in Actor-Critic with Softmax Policies?", "options": {"A": "It learns the policy function", "B": "It calculates the probability distribution over actions", "C": "It evaluates the quality of the policy chosen by the actor", "D": "It determines the exploration rate"}, "answer": "C", "explanation": "Critic đánh giá chính sách của actor.", "sourceUrl": "https://quizlet.com/1239317353/rel301m-reinforcement-learning-su25-flash-cards/"}, {"id": "su25_rl_34", "setId": "su25_rl", "setTitle": "SU25", "num": 34, "question": "Which of the following is NOT a method for solving MDPs?", "options": {"A": "Dynamic Programming", "B": "Monte Carlo Methods", "C": "Temporal Difference Learning", "D": "Stochastic Gradient Descent"}, "answer": "D", "explanation": "Stochastic Gradient Descent là thuật toán tối ưu tổng quát.", "sourceUrl": "https://quizlet.com/1239317353/rel301m-reinforcement-learning-su25-flash-cards/"}, {"id": "su25_rl_35", "setId": "su25_rl", "setTitle": "SU25", "num": 35, "question": "How does the flexibility of the Policy Iteration Framework contribute to robustness?", "options": {"A": "By limiting the diversity of policies explored", "B": "By allowing for rapid convergence to a single optimal policy", "C": "By enabling adaptation to varying conditions or goals", "D": "None of the above"}, "answer": "C", "explanation": "Khung lặp chính sách cho phép thích ứng khi điều kiện hoặc mục tiêu thay đổi.", "sourceUrl": "https://quizlet.com/1239317353/rel301m-reinforcement-learning-su25-flash-cards/"}, {"id": "su25_rl_36", "setId": "su25_rl", "setTitle": "SU25", "num": 36, "question": "In the context of the multi-armed bandit problem, what does the term \"exploitation\" refer to?", "options": {"A": "Trying out different arms to gather information", "B": "Using the known information to select the best arm", "C": "Ignoring the past rewards and trying new strategies", "D": "Allocating equal time to all arms"}, "answer": "B", "explanation": "Dùng thông tin đã biết để chọn cần gạt có giá trị ước tính cao nhất.", "sourceUrl": "https://quizlet.com/1239317353/rel301m-reinforcement-learning-su25-flash-cards/"}, {"id": "su25_rl_37", "setId": "su25_rl", "setTitle": "SU25", "num": 37, "question": "What happens if the value function of a policy converges during Iterative Policy Evaluation?", "options": {"A": "The optimal policy is achieved", "B": "The value function becomes infinite", "C": "The policy becomes deterministic", "D": "The policy evaluation process stops"}, "answer": "D", "explanation": "Dừng bước đánh giá chính sách khi giá trị đã hội tụ.", "sourceUrl": "https://quizlet.com/1239317353/rel301m-reinforcement-learning-su25-flash-cards/"}, {"id": "su25_rl_38", "setId": "su25_rl", "setTitle": "SU25", "num": 38, "question": "Which function is typically used to represent the action value in reinforcement learning?", "options": {"A": "Reward function (R)", "B": "Value function (V)", "C": "Policy function (π)", "D": "Q-function (Q)"}, "answer": "D", "explanation": "Hàm Q biểu diễn giá trị hành động.", "sourceUrl": "https://quizlet.com/1239317353/rel301m-reinforcement-learning-su25-flash-cards/"}, {"id": "su25_rl_39", "setId": "su25_rl", "setTitle": "SU25", "num": 39, "question": "How does hyperbolic discounting differ from exponential discounting?", "options": {"A": "Hyperbolic discounting values future rewards more than exponential discounting.", "B": "Exponential discounting values future rewards more than hyperbolic discounting.", "C": "Both discount future rewards equally.", "D": "Hyperbolic discounting is not related to time preference."}, "answer": "A", "explanation": "Chiết khấu hyperbol giảm chậm hơn ở tương lai xa nên định giá phần thưởng xa cao hơn chiết khấu mũ.", "sourceUrl": "https://quizlet.com/1239317353/rel301m-reinforcement-learning-su25-flash-cards/"}, {"id": "su25_rl_40", "setId": "su25_rl", "setTitle": "SU25", "num": 40, "question": "Which task type typically requires sustained effort over time?", "options": {"A": "Episodic tasks.", "B": "Continuing tasks.", "C": "Both episodic and continuing tasks.", "D": "Neither episodic nor continuing tasks."}, "answer": "B", "explanation": "Continuing tasks (các nhiệm vụ tiếp diễn).", "sourceUrl": "https://quizlet.com/1239317353/rel301m-reinforcement-learning-su25-flash-cards/"}, {"id": "su25_rl_41", "setId": "su25_rl", "setTitle": "SU25", "num": 41, "question": "What does the action value Q(s,a) represent in reinforcement learning?", "options": {"A": "The probability of transitioning to state s from state a", "B": "The expected return (total future reward) of taking action a in state s", "C": "The immediate reward received after taking action a", "D": "The average time it takes to transition from state s to state a"}, "answer": "B", "explanation": "Return kỳ vọng khi chọn a tại s, sau đó tiếp tục theo chính sách đang xét.", "sourceUrl": "https://quizlet.com/1239317353/rel301m-reinforcement-learning-su25-flash-cards/"}, {"id": "su25_rl_42", "setId": "su25_rl", "setTitle": "SU25", "num": 42, "question": "Which notation is commonly used to represent the action-value function?", "options": {"A": "V(s)", "B": "R(s, a)", "C": "Q(s, a)", "D": "P(a | s)"}, "answer": "C", "explanation": "Q(s,a).", "sourceUrl": "https://quizlet.com/1239317353/rel301m-reinforcement-learning-su25-flash-cards/"}, {"id": "su25_rl_43", "setId": "su25_rl", "setTitle": "SU25", "num": 43, "question": "In Policy Evaluation, what is the objective function typically used?", "options": {"A": "Bellman Equation", "B": "Logistic Regression", "C": "Cost Function", "D": "Gradient Descent"}, "answer": "A", "explanation": "Phương trình kỳ vọng Bellman mà hàm giá trị của chính sách phải thỏa.", "sourceUrl": "https://quizlet.com/1239317353/rel301m-reinforcement-learning-su25-flash-cards/"}, {"id": "su25_rl_44", "setId": "su25_rl", "setTitle": "SU25", "num": 44, "question": "Which of the following is NOT a component of the reinforcement learning framework?", "options": {"A": "Agent", "B": "Environment", "C": "Memory", "D": "Reward Signal"}, "answer": "C", "explanation": "Bộ nhớ riêng (Memory) không phải thành phần bắt buộc của khung RL cơ bản.", "sourceUrl": "https://quizlet.com/1239317353/rel301m-reinforcement-learning-su25-flash-cards/"}, {"id": "su25_rl_45", "setId": "su25_rl", "setTitle": "SU25", "num": 45, "question": "In what way do rewards contribute to the goal-oriented behavior of an agent?", "options": {"A": "By encouraging trial and error", "B": "By increasing randomness", "C": "By decreasing motivation", "D": "By providing feedback on progress"}, "answer": "D", "explanation": "Phần thưởng phản hồi mức tiến triển hướng tới mục tiêu.", "sourceUrl": "https://quizlet.com/1239317353/rel301m-reinforcement-learning-su25-flash-cards/"}, {"id": "su25_rl_46", "setId": "su25_rl", "setTitle": "SU25", "num": 46, "question": "In reinforcement learning, what is the Bellman equation used for?", "options": {"A": "Calculating the optimal value function", "B": "Estimating the value of actions", "C": "Updating the policy", "D": "Computing the expected reward"}, "answer": "A", "explanation": "Tính hàm giá trị tối ưu (phương trình Bellman tối ưu).", "sourceUrl": "https://quizlet.com/1239317353/rel301m-reinforcement-learning-su25-flash-cards/"}, {"id": "su25_rl_47", "setId": "su25_rl", "setTitle": "SU25", "num": 47, "question": "Which method involves selecting actions based on their probability distribution determined by their estimated value functions?", "options": {"A": "Epsilon-Greedy", "B": "Upper Confidence Bound (UCB)", "C": "Softmax", "D": "Monte Carlo Tree Search"}, "answer": "C", "explanation": "Softmax chọn hành động theo xác suất suy ra từ giá trị ước lượng.", "sourceUrl": "https://quizlet.com/1239317353/rel301m-reinforcement-learning-su25-flash-cards/"}, {"id": "su25_rl_48", "setId": "su25_rl", "setTitle": "SU25", "num": 48, "question": "Which exploration strategy selects actions according to a probability distribution that balances the known rewards with the potential for discovering new rewards?", "options": {"A": "Softmax Action Selection", "B": "Epsilon-Greedy", "C": "Upper Confidence Bound (UCB)", "D": "Temporal Difference Learning"}, "answer": "A", "explanation": "Softmax Action Selection gán xác suất trực tiếp theo giá trị ước lượng của từng hành động.", "sourceUrl": "https://quizlet.com/1239317353/rel301m-reinforcement-learning-su25-flash-cards/"}, {"id": "su25_rl_49", "setId": "su25_rl", "setTitle": "SU25", "num": 49, "question": "What is the \"exploration-exploitation trade-off\" in reinforcement learning?", "options": {"A": "The decision between using known information versus gathering new information", "B": "The choice between high reward and low risk", "C": "The balance between reward and punishment", "D": "The selection between multiple reward mechanisms"}, "answer": "A", "explanation": "Đánh đổi giữa dùng thông tin đã biết và thu thập thông tin mới.", "sourceUrl": "https://quizlet.com/1239317353/rel301m-reinforcement-learning-su25-flash-cards/"}, {"id": "su25_rl_50", "setId": "su25_rl", "setTitle": "SU25", "num": 50, "question": "In reinforcement learning, what is an agent?", "options": {"A": "A human supervisor", "B": "A software program", "C": "An entity that interacts with the environment", "D": "A mathematical equation"}, "answer": "C", "explanation": "Thực thể tương tác với môi trường.", "sourceUrl": "https://quizlet.com/1239317353/rel301m-reinforcement-learning-su25-flash-cards/"}, {"id": "sp26_fe_1", "setId": "sp26_fe", "setTitle": "SP26", "num": 1, "question": "What is the key objective of using a Temporal Difference (TD) learning algorithm? (choose the best answer/core idea of TD learning)", "options": {"A": "To estimate the value of a state based on the complete return from a full episode.", "B": "To update the value function by using the difference between successive state values.", "C": "To learn the optimal value function without requiring a model of the environment's dynamics.", "D": "To approximate the total return by bootstrapping from the immediate reward and the estimated value of the next state."}, "answer": "D", "explanation": "", "sourceUrl": "https://quizlet.com/vn/1234867780/rel301m_sp26_fe_683174-flash-cards/"}, {"id": "sp26_fe_2", "setId": "sp26_fe", "setTitle": "SP26", "num": 2, "question": "Which of the following methods is associated with distribution models for handling uncertainty in state transitions?", "options": {"A": "Markov Decision Processes (MDPs)", "B": "Policy Gradient Methods", "C": "Particle Filters", "D": "Q-Learning"}, "answer": "C", "explanation": "", "sourceUrl": "https://quizlet.com/vn/1234867780/rel301m_sp26_fe_683174-flash-cards/"}, {"id": "sp26_fe_3", "setId": "sp26_fe", "setTitle": "SP26", "num": 3, "question": "Which of the following is a key benefit of using Dyna Architecture?", "options": {"A": "Reduced computational resources", "B": "Increased data redundancy", "C": "Improved model scalability and adaptability", "D": "Simplified system design"}, "answer": "C", "explanation": "", "sourceUrl": "https://quizlet.com/vn/1234867780/rel301m_sp26_fe_683174-flash-cards/"}, {"id": "sp26_fe_4", "setId": "sp26_fe", "setTitle": "SP26", "num": 4, "question": "What is the relationship between sample efficiency and sample-based models?", "options": {"A": "Sample-based models are more sample-efficient than distribution models", "B": "Sample-based models are generally less sample-efficient than distribution models", "C": "Both types of models have the same sample efficiency", "D": "Sample efficiency is not a concern in reinforcement learning"}, "answer": "B", "explanation": "", "sourceUrl": "https://quizlet.com/vn/1234867780/rel301m_sp26_fe_683174-flash-cards/"}, {"id": "sp26_fe_5", "setId": "sp26_fe", "setTitle": "SP26", "num": 5, "question": "What does the exploration in Gaussian policies rely on?", "options": {"A": "Random noise added to the mean action", "B": "Random sampling from a uniform distribution", "C": "Fixed exploration rate", "D": "Adaptive exploration based on reward feedback"}, "answer": "A", "explanation": "", "sourceUrl": "https://quizlet.com/vn/1234867780/rel301m_sp26_fe_683174-flash-cards/"}, {"id": "sp26_fe_6", "setId": "sp26_fe", "setTitle": "SP26", "num": 6, "question": "Which factor influences the stability of policy gradient algorithms during training?", "options": {"A": "Learning rate", "B": "Discount factor", "C": "Exploration rate", "D": "Entropy regularization"}, "answer": "A", "explanation": "", "sourceUrl": "https://quizlet.com/vn/1234867780/rel301m_sp26_fe_683174-flash-cards/"}, {"id": "sp26_fe_7", "setId": "sp26_fe", "setTitle": "SP26", "num": 7, "question": "Which of the following algorithms is commonly used in reinforcement learning?", "options": {"A": "k-Nearest Neighbors", "B": "Q-Learning", "C": "Principal Component Analysis", "D": "Decision Trees"}, "answer": "B", "explanation": "", "sourceUrl": "https://quizlet.com/vn/1234867780/rel301m_sp26_fe_683174-flash-cards/"}, {"id": "sp26_fe_8", "setId": "sp26_fe", "setTitle": "SP26", "num": 8, "question": "What is a potential disadvantage of using Expected Sarsa over Sarsa?", "options": {"A": "It tends to have higher variance in updates", "B": "It requires knowledge of the policy's action probabilities", "C": "It converges more slowly than Sarsa", "D": "It cannot be used in online learning settings"}, "answer": "B", "explanation": "", "sourceUrl": "https://quizlet.com/vn/1234867780/rel301m_sp26_fe_683174-flash-cards/"}, {"id": "sp26_fe_9", "setId": "sp26_fe", "setTitle": "SP26", "num": 9, "question": "In the sample average method, what does the step size parameter determine?", "options": {"A": "The total number of actions taken", "B": "The influence of the most recent reward on the estimate", "C": "The number of ads to display", "D": "The initial value of Q"}, "answer": "B", "explanation": "", "sourceUrl": "https://quizlet.com/vn/1234867780/rel301m_sp26_fe_683174-flash-cards/"}, {"id": "sp26_fe_10", "setId": "sp26_fe", "setTitle": "SP26", "num": 10, "question": "Which technique is commonly used to reduce the variance of policy gradient estimates?", "options": {"A": "Actor-Critic methods", "B": "Temporal Difference learning", "C": "Monte Carlo Tree Search", "D": "Model-based reinforcement learning"}, "answer": "A", "explanation": "", "sourceUrl": "https://quizlet.com/vn/1234867780/rel301m_sp26_fe_683174-flash-cards/"}, {"id": "sp26_fe_11", "setId": "sp26_fe", "setTitle": "SP26", "num": 11, "question": "What is the primary purpose of the state value function in reinforcement learning?", "options": {"A": "To determine the probability of taking a certain action", "B": "To estimate the future rewards from a given state", "C": "To record the history of visited states", "D": "To minimize the error rate of predictions"}, "answer": "B", "explanation": "", "sourceUrl": "https://quizlet.com/vn/1234867780/rel301m_sp26_fe_683174-flash-cards/"}, {"id": "sp26_fe_12", "setId": "sp26_fe", "setTitle": "SP26", "num": 12, "question": "What is the main challenge associated with using parameterized policies in reinforcement learning?", "options": {"A": "They are computationally expensive", "B": "They often lead to overfitting", "C": "They require a large amount of training data", "D": "They can suffer from local optima"}, "answer": "D", "explanation": "", "sourceUrl": "https://quizlet.com/vn/1234867780/rel301m_sp26_fe_683174-flash-cards/"}, {"id": "sp26_fe_13", "setId": "sp26_fe", "setTitle": "SP26", "num": 13, "question": "What is the advantage of using a higher number of sample points in estimating the gradient?", "options": {"A": "Increased accuracy", "B": "Decreased computation time", "C": "Reduced memory usage", "D": "Smaller margin of error"}, "answer": "A", "explanation": "", "sourceUrl": "https://quizlet.com/vn/1234867780/rel301m_sp26_fe_683174-flash-cards/"}, {"id": "sp26_fe_14", "setId": "sp26_fe", "setTitle": "SP26", "num": 14, "question": "Which statement best describes Tabular Temporal Difference (TD) learning?", "options": {"A": "It uses a table to store values for each state-action pair.", "B": "It uses function approximation to estimate value functions.", "C": "It updates values based on rewards and state transitions without using tables.", "D": "It requires the exact model of the environment."}, "answer": "A", "explanation": "", "sourceUrl": "https://quizlet.com/vn/1234867780/rel301m_sp26_fe_683174-flash-cards/"}, {"id": "sp26_fe_15", "setId": "sp26_fe", "setTitle": "SP26", "num": 15, "question": "What does the Q-Learning update do in the context of planning?", "options": {"A": "It generates new states.", "B": "It improves the policy based on updated action values.", "C": "It eliminates the need for a model.", "D": "It only focuses on real-world experiences."}, "answer": "B", "explanation": "", "sourceUrl": "https://quizlet.com/vn/1234867780/rel301m_sp26_fe_683174-flash-cards/"}, {"id": "sp26_fe_16", "setId": "sp26_fe", "setTitle": "SP26", "num": 16, "question": "In expected Sarsa, the weights used in the expectation calculation are based on:", "options": {"A": "The rewards received", "B": "The probability of taking each action under the agent's policy", "C": "The number of actions available", "D": "The current state of the environment"}, "answer": "B", "explanation": "", "sourceUrl": "https://quizlet.com/vn/1234867780/rel301m_sp26_fe_683174-flash-cards/"}, {"id": "sp26_fe_17", "setId": "sp26_fe", "setTitle": "SP26", "num": 17, "question": "Which algorithm is commonly used to solve an MDP?", "options": {"A": "K-means clustering", "B": "Breadth-first search", "C": "Value iteration", "D": "Gradient descent"}, "answer": "C", "explanation": "", "sourceUrl": "https://quizlet.com/vn/1234867780/rel301m_sp26_fe_683174-flash-cards/"}, {"id": "sp26_fe_18", "setId": "sp26_fe", "setTitle": "SP26", "num": 18, "question": "What is a common approach to reduce the variance in Monte Carlo estimates?", "options": {"A": "Using a discount factor.", "B": "Using importance sampling.", "C": "Using eligibility traces.", "D": "Using linear function approximation."}, "answer": "B", "explanation": "", "sourceUrl": "https://quizlet.com/vn/1234867780/rel301m_sp26_fe_683174-flash-cards/"}, {"id": "sp26_fe_19", "setId": "sp26_fe", "setTitle": "SP26", "num": 19, "question": "In contrast to Dynamic Programming and Monte Carlo methods, what aspect makes Temporal Difference (TD) methods more suitable for online learning?", "options": {"A": "TD methods are slower to update values.", "B": "TD methods require extensive computational resources.", "C": "TD methods update values based on incomplete sequences.", "D": "TD methods are less flexible in adapting to changing environments."}, "answer": "C", "explanation": "", "sourceUrl": "https://quizlet.com/vn/1234867780/rel301m_sp26_fe_683174-flash-cards/"}, {"id": "sp26_fe_20", "setId": "sp26_fe", "setTitle": "SP26", "num": 20, "question": "What is the Bellman equation used for in the context of MDPs?", "options": {"A": "To determine the optimal policy.", "B": "To update the value function.", "C": "To calculate the transition probabilities.", "D": "To find the immediate reward."}, "answer": "B", "explanation": "", "sourceUrl": "https://quizlet.com/vn/1234867780/rel301m_sp26_fe_683174-flash-cards/"}, {"id": "sp26_fe_21", "setId": "sp26_fe", "setTitle": "SP26", "num": 21, "question": "In the context of linear function approximation, what is the gradient of the value function approximation?", "options": {"A": "The true value of the state", "B": "The feature vector in that state", "C": "The mean squared error", "D": "The policy value"}, "answer": "B", "explanation": "", "sourceUrl": "https://quizlet.com/vn/1234867780/rel301m_sp26_fe_683174-flash-cards/"}, {"id": "sp26_fe_22", "setId": "sp26_fe", "setTitle": "SP26", "num": 22, "question": "Which phase of Policy Iteration involves updating the policy based on the current value function?", "options": {"A": "Policy Evaluation", "B": "Policy Improvement", "C": "Policy Initialization", "D": "Policy Iteration"}, "answer": "B", "explanation": "", "sourceUrl": "https://quizlet.com/vn/1234867780/rel301m_sp26_fe_683174-flash-cards/"}, {"id": "sp26_fe_23", "setId": "sp26_fe", "setTitle": "SP26", "num": 23, "question": "In the context of function approximation, what does Mu of S represent?", "options": {"A": "The total number of states", "B": "The probability distribution of state visits", "C": "The error in value function approximation", "D": "The learning rate of the algorithm"}, "answer": "B", "explanation": "", "sourceUrl": "https://quizlet.com/vn/1234867780/rel301m_sp26_fe_683174-flash-cards/"}, {"id": "sp26_fe_24", "setId": "sp26_fe", "setTitle": "SP26", "num": 24, "question": "What does the term \"off-policy\" refer to in the context of Expected Sarsa?", "options": {"A": "Learning from actions that are not taken by the agent.", "B": "Learning from actions that are taken by the agent.", "C": "Learning without any prior knowledge of the environment.", "D": "Learning that does not depend on the current policy."}, "answer": "A", "explanation": "", "sourceUrl": "https://quizlet.com/vn/1234867780/rel301m_sp26_fe_683174-flash-cards/"}, {"id": "sp26_fe_25", "setId": "sp26_fe", "setTitle": "SP26", "num": 25, "question": "What is the Bellman equation used for in the context of MDPs?", "options": {"A": "To calculate the shortest path between states.", "B": "To update the policy in reinforcement learning.", "C": "To express the relationship between the value of a state and the values of its successor states.", "D": "To compute the transition probabilities between states to get maximum rewards."}, "answer": "C", "explanation": "", "sourceUrl": "https://quizlet.com/vn/1234867780/rel301m_sp26_fe_683174-flash-cards/"}, {"id": "sp26_fe_26", "setId": "sp26_fe", "setTitle": "SP26", "num": 26, "question": "What distinguishes Temporal Difference (TD) methods from Monte Carlo methods regarding the handling of incomplete episodes?", "options": {"A": "TD methods require complete episodes for updating values.", "B": "TD methods update values based on incomplete episodes.", "C": "TD methods cannot handle incomplete episodes efficiently.", "D": "TD methods do not rely on experiences for learning."}, "answer": "B", "explanation": "", "sourceUrl": "https://quizlet.com/vn/1234867780/rel301m_sp26_fe_683174-flash-cards/"}, {"id": "sp26_fe_27", "setId": "sp26_fe", "setTitle": "SP26", "num": 27, "question": "Which problem arises due to the use of linear function approximation in reinforcement learning?", "options": {"A": "Overfitting", "B": "Curse of dimensionality", "C": "Underfitting", "D": "Vanishing gradients"}, "answer": "C", "explanation": "", "sourceUrl": "https://quizlet.com/vn/1234867780/rel301m_sp26_fe_683174-flash-cards/"}, {"id": "sp26_fe_28", "setId": "sp26_fe", "setTitle": "SP26", "num": 28, "question": "In the context of Temporal Difference (TD), Which of the following is NOT a step in the TD(0) algorithm?", "options": {"A": "Prediction", "B": "Evaluation", "C": "Backpropagation", "D": "Bootstrapping"}, "answer": "C", "explanation": "", "sourceUrl": "https://quizlet.com/vn/1234867780/rel301m_sp26_fe_683174-flash-cards/"}, {"id": "sp26_fe_29", "setId": "sp26_fe", "setTitle": "SP26", "num": 29, "question": "What is the primary purpose of Dyna Architecture?", "options": {"A": "To develop operating systems", "B": "To design scalable web servers", "C": "To model complex dynamic systems", "D": "To manage database transactions"}, "answer": "C", "explanation": "", "sourceUrl": "https://quizlet.com/vn/1234867780/rel301m_sp26_fe_683174-flash-cards/"}, {"id": "sp26_fe_30", "setId": "sp26_fe", "setTitle": "SP26", "num": 30, "question": "Which of the following is a key component of Monte Carlo simulations?", "options": {"A": "Deterministic algorithms", "B": "Random sampling", "C": "Fixed input values", "D": "Analytical solutions"}, "answer": "B", "explanation": "", "sourceUrl": "https://quizlet.com/vn/1234867780/rel301m_sp26_fe_683174-flash-cards/"}, {"id": "sp26_fe_31", "setId": "sp26_fe", "setTitle": "SP26", "num": 31, "question": "In reinforcement learning, the state value function V(s) represents:", "options": {"A": "The immediate reward received after taking an action in state s", "B": "The total accumulated reward from state s", "C": "The expected return starting from state s", "D": "The likelihood of transitioning from state s to another state"}, "answer": "C", "explanation": "", "sourceUrl": "https://quizlet.com/vn/1234867780/rel301m_sp26_fe_683174-flash-cards/"}, {"id": "sp26_fe_32", "setId": "sp26_fe", "setTitle": "SP26", "num": 32, "question": "What is the main purpose of using optimistic initial values in function approximation?", "options": {"A": "To ensure faster convergence", "B": "To encourage exploration", "C": "To minimize errors", "D": "To guarantee optimal solutions"}, "answer": "B", "explanation": "", "sourceUrl": "https://quizlet.com/vn/1234867780/rel301m_sp26_fe_683174-flash-cards/"}, {"id": "sp26_fe_33", "setId": "sp26_fe", "setTitle": "SP26", "num": 33, "question": "In the Monte Carlo prediction method, what is the purpose of using the policy π?", "options": {"A": "To determine the sequence of states", "B": "To generate episodes", "C": "To update the value function", "D": "To ensure convergence of the algorithm"}, "answer": "B", "explanation": "", "sourceUrl": "https://quizlet.com/vn/1234867780/rel301m_sp26_fe_683174-flash-cards/"}, {"id": "sp26_fe_34", "setId": "sp26_fe", "setTitle": "SP26", "num": 34, "question": "What does the term \"semi-gradient\" refer to in the context of linear semi-gradient Temporal Difference learning?", "options": {"A": "Using gradients to update the table values.", "B": "Approximating gradients using a non-linear function.", "C": "Using part of the gradient information to update parameters.", "D": "Calculating exact gradients for function updates."}, "answer": "C", "explanation": "", "sourceUrl": "https://quizlet.com/vn/1234867780/rel301m_sp26_fe_683174-flash-cards/"}, {"id": "sp26_fe_35", "setId": "sp26_fe", "setTitle": "SP26", "num": 35, "question": "In reinforcement learning, what does a stochastic policy do?", "options": {"A": "Selects actions randomly with equal probability", "B": "Selects the same action for a given state every time", "C": "Selects actions based on a probability distribution", "D": "Does not select any action"}, "answer": "C", "explanation": "", "sourceUrl": "https://quizlet.com/vn/1234867780/rel301m_sp26_fe_683174-flash-cards/"}, {"id": "sp26_fe_36", "setId": "sp26_fe", "setTitle": "SP26", "num": 36, "question": "What does the term \"greedification\" refer to in the context of policy improvement?", "options": {"A": "Making a policy more random", "B": "Selecting actions that maximize the value function", "C": "Evaluating the performance of a policy", "D": "Following the original policy without changes"}, "answer": "B", "explanation": "", "sourceUrl": "https://quizlet.com/vn/1234867780/rel301m_sp26_fe_683174-flash-cards/"}, {"id": "sp26_fe_37", "setId": "sp26_fe", "setTitle": "SP26", "num": 37, "question": "Which of the following is NOT a typical component of a reinforcement learning model?", "options": {"A": "State transition probabilities", "B": "Reward function", "C": "Policy network", "D": "Action space"}, "answer": "A", "explanation": "", "sourceUrl": "https://quizlet.com/vn/1234867780/rel301m_sp26_fe_683174-flash-cards/"}, {"id": "sp26_fe_38", "setId": "sp26_fe", "setTitle": "SP26", "num": 38, "question": "In an experiment, a pigeon is trained to peck a key when it sees a red light but not when it sees a green light. This is an example of:", "options": {"A": "Generalization", "B": "Spontaneous recovery", "C": "Discrimination", "D": "Habituation"}, "answer": "C", "explanation": "", "sourceUrl": "https://quizlet.com/vn/1234867780/rel301m_sp26_fe_683174-flash-cards/"}, {"id": "sp26_fe_39", "setId": "sp26_fe", "setTitle": "SP26", "num": 39, "question": "How many components does the feature vector have when there are four features and three actions in a stacked representation?", "options": {"A": "4", "B": "7", "C": "12", "D": "16"}, "answer": "C", "explanation": "", "sourceUrl": "https://quizlet.com/vn/1234867780/rel301m_sp26_fe_683174-flash-cards/"}, {"id": "sp26_fe_40", "setId": "sp26_fe", "setTitle": "SP26", "num": 40, "question": "In policy iteration, what is the role of the policy evaluation step?", "options": {"A": "To improve the policy based on current estimates of the value function", "B": "To randomly update the policy", "C": "To compute the value function of the current policy", "D": "To explore different policies without updating them"}, "answer": "C", "explanation": "", "sourceUrl": "https://quizlet.com/vn/1234867780/rel301m_sp26_fe_683174-flash-cards/"}, {"id": "sp26_fe_41", "setId": "sp26_fe", "setTitle": "SP26", "num": 41, "question": "Which of the following exploration strategies is commonly used with SARSA?", "options": {"A": "Softmax action selection", "B": "Upper Confidence Bound (UCB)", "C": "Epsilon-greedy", "D": "Boltzmann exploration"}, "answer": "C", "explanation": "", "sourceUrl": "https://quizlet.com/vn/1234867780/rel301m_sp26_fe_683174-flash-cards/"}, {"id": "sp26_fe_42", "setId": "sp26_fe", "setTitle": "SP26", "num": 42, "question": "What advantage does Tile Coding provide compared to a single large lookup table?", "options": {"A": "Increased computational speed", "B": "Reduced overfitting", "C": "More memory efficiency", "D": "Higher resolution of state representation"}, "answer": "C", "explanation": "", "sourceUrl": "https://quizlet.com/vn/1234867780/rel301m_sp26_fe_683174-flash-cards/"}, {"id": "sp26_fe_43", "setId": "sp26_fe", "setTitle": "SP26", "num": 43, "question": "Which type of reinforcement learning model typically uses Monte Carlo simulations to estimate values?", "options": {"A": "Sample-based models", "B": "Distribution models", "C": "Both sample-based and distribution models", "D": "Neither sample-based nor distribution models"}, "answer": "A", "explanation": "", "sourceUrl": "https://quizlet.com/vn/1234867780/rel301m_sp26_fe_683174-flash-cards/"}, {"id": "sp26_fe_44", "setId": "sp26_fe", "setTitle": "SP26", "num": 44, "question": "In Policy Iteration, which step involves evaluating the current policy's performance and updating the value function?", "options": {"A": "Policy Evaluation", "B": "Policy Improvement", "C": "Policy Initialization", "D": "Policy Iteration"}, "answer": "A", "explanation": "", "sourceUrl": "https://quizlet.com/vn/1234867780/rel301m_sp26_fe_683174-flash-cards/"}, {"id": "sp26_fe_45", "setId": "sp26_fe", "setTitle": "SP26", "num": 45, "question": "Which of the following is a primary characteristic of a distribution model in reinforcement learning?", "options": {"A": "It directly samples actions based on a policy.", "B": "It approximates the transition dynamics of the environment.", "C": "It only updates after the entire episode ends.", "D": "It requires a deterministic policy."}, "answer": "B", "explanation": "", "sourceUrl": "https://quizlet.com/vn/1234867780/rel301m_sp26_fe_683174-flash-cards/"}, {"id": "sp26_fe_46", "setId": "sp26_fe", "setTitle": "SP26", "num": 46, "question": "Which term describes a methodical approach to handling episodic tasks?", "options": {"A": "Ad hoc management", "B": "Reactive management", "C": "Proactive management", "D": "Time-blocking"}, "answer": "D", "explanation": "", "sourceUrl": "https://quizlet.com/vn/1234867780/rel301m_sp26_fe_683174-flash-cards/"}, {"id": "sp26_fe_47", "setId": "sp26_fe", "setTitle": "SP26", "num": 47, "question": "Which term describes the probability distribution over next states given a current state and action in an MDP?", "options": {"A": "Policy", "B": "Reward function", "C": "Transition model", "D": "Value function"}, "answer": "C", "explanation": "", "sourceUrl": "https://quizlet.com/vn/1234867780/rel301m_sp26_fe_683174-flash-cards/"}, {"id": "sp26_fe_48", "setId": "sp26_fe", "setTitle": "SP26", "num": 48, "question": "What is the purpose of the accumulated product of important sampling ratios (W) in the off-policy Monte Carlo prediction algorithm?", "options": {"A": "To store all past values of Rho", "B": "To correct the returns generated by the behavior policy", "C": "To calculate the average reward", "D": "To simplify the algorithm"}, "answer": "B", "explanation": "", "sourceUrl": "https://quizlet.com/vn/1234867780/rel301m_sp26_fe_683174-flash-cards/"}, {"id": "sp26_fe_49", "setId": "sp26_fe", "setTitle": "SP26", "num": 49, "question": "What is the advantage of using policy gradient methods over value-based methods like Q-learning?", "options": {"A": "Better convergence guarantees", "B": "Simpler implementation", "C": "More efficient memory usage", "D": "Ability to handle continuous action spaces"}, "answer": "D", "explanation": "", "sourceUrl": "https://quizlet.com/vn/1234867780/rel301m_sp26_fe_683174-flash-cards/"}, {"id": "sp26_fe_50", "setId": "sp26_fe", "setTitle": "SP26", "num": 50, "question": "What differentiates off-policy Q-learning from on-policy methods like SARSA?", "options": {"A": "Q-learning uses past experiences while SARSA uses future predictions.", "B": "Q-learning updates using the highest Q-value of the next state, while SARSA updates using the action actually taken.", "C": "Q-learning requires a model of the environment, while SARSA does not.", "D": "Q-learning is based on deterministic policies, while SARSA is based on stochastic policies."}, "answer": "B", "explanation": "", "sourceUrl": "https://quizlet.com/vn/1234867780/rel301m_sp26_fe_683174-flash-cards/"}, {"id": "su26_fe_1", "setId": "su26_fe", "setTitle": "SU26", "num": 1, "question": "In Q-learning, which term is used to update the Q-value for state s and action a?", "options": {"A": "α (learning rate)", "B": "β (exploration rate)", "C": "δ (error term)", "D": "λ (decay rate)"}, "answer": "A", "explanation": "", "sourceUrl": "https://quizlet.com/vn/1234867796/rel301m_su26_fe_335344-flash-cards/"}, {"id": "su26_fe_2", "setId": "su26_fe", "setTitle": "SU26", "num": 2, "question": "Why does this TD update allow faster propagation of value information across states?", "options": {"A": "Because it waits until the full return is observed.", "B": "Because it uses estimated future values during each update.", "C": "Because it eliminates the need for rewards in the update rule.", "D": "Because it requires complete knowledge of all transitions in the environment."}, "answer": "B", "explanation": "", "sourceUrl": "https://quizlet.com/vn/1234867796/rel301m_su26_fe_335344-flash-cards/"}, {"id": "su26_fe_3", "setId": "su26_fe", "setTitle": "SU26", "num": 3, "question": "Which parameter determines the degree of exploration in Actor-Critic with Softmax Policies?", "options": {"A": "Learning rate", "B": "Temperature parameter", "C": "Discount factor", "D": "Advantage function"}, "answer": "B", "explanation": "", "sourceUrl": "https://quizlet.com/vn/1234867796/rel301m_su26_fe_335344-flash-cards/"}, {"id": "su26_fe_4", "setId": "su26_fe", "setTitle": "SU26", "num": 4, "question": "During the first episode, how does the robot update its action values?", "options": {"A": "Using simulated experience", "B": "By exploring all possible actions", "C": "Through direct RL updates from real experience", "D": "By following a fixed policy"}, "answer": "C", "explanation": "", "sourceUrl": "https://quizlet.com/vn/1234867796/rel301m_su26_fe_335344-flash-cards/"}, {"id": "su26_fe_5", "setId": "su26_fe", "setTitle": "SU26", "num": 5, "question": "Which dynamic programming method iteratively improves both the policy and the value function?", "options": {"A": "Policy iteration", "B": "Value iteration", "C": "Monte Carlo methods", "D": "Q-learning"}, "answer": "A", "explanation": "", "sourceUrl": "https://quizlet.com/vn/1234867796/rel301m_su26_fe_335344-flash-cards/"}, {"id": "su26_fe_6", "setId": "su26_fe", "setTitle": "SU26", "num": 6, "question": "In Monte Carlo prediction, what is typically used to estimate the value of a state?", "options": {"A": "The maximum reward observed during operation", "B": "The average return observed from that state", "C": "The sum of immediate rewards", "D": "The minimum reward observed"}, "answer": "B", "explanation": "", "sourceUrl": "https://quizlet.com/vn/1234867796/rel301m_su26_fe_335344-flash-cards/"}, {"id": "su26_fe_7", "setId": "su26_fe", "setTitle": "SU26", "num": 7, "question": "What does the Dyna architecture primarily combine?", "options": {"A": "Direct RL updates and planning updates", "B": "Supervised learning and unsupervised learning", "C": "Neural networks and decision trees", "D": "Clustering and regression"}, "answer": "A", "explanation": "", "sourceUrl": "https://quizlet.com/vn/1234867796/rel301m_su26_fe_335344-flash-cards/"}, {"id": "su26_fe_8", "setId": "su26_fe", "setTitle": "SU26", "num": 8, "question": "What is the primary objective of policy control in reinforcement learning?", "options": {"A": "Maximizing immediate rewards", "B": "Minimizing state-action space", "C": "Balancing exploration and exploitation", "D": "Optimizing computational resources"}, "answer": "C", "explanation": "", "sourceUrl": "https://quizlet.com/vn/1234867796/rel301m_su26_fe_335344-flash-cards/"}, {"id": "su26_fe_9", "setId": "su26_fe", "setTitle": "SU26", "num": 9, "question": "When a child learns to use a specific greeting for different individuals (e.g., 'Hi' for peers, 'Good morning' for teachers), this is an example of:", "options": {"A": "Generalization", "B": "Discrimination", "C": "Extinction", "D": "Classical conditioning"}, "answer": "B", "explanation": "", "sourceUrl": "https://quizlet.com/vn/1234867796/rel301m_su26_fe_335344-flash-cards/"}, {"id": "su26_fe_10", "setId": "su26_fe", "setTitle": "SU26", "num": 10, "question": "Which of the following best describes the role of the two arrays (V and V prime) in the iterative policy evaluation algorithm?", "options": {"A": "They store the rewards for each state", "B": "They hold the current and updated values to avoid overwriting during updates", "C": "They represent the actions taken in each state", "D": "They are used to track the exploration strategy"}, "answer": "B", "explanation": "", "sourceUrl": "https://quizlet.com/vn/1234867796/rel301m_su26_fe_335344-flash-cards/"}, {"id": "su26_fe_11", "setId": "su26_fe", "setTitle": "SU26", "num": 11, "question": "How is the variance parameter typically represented in a Gaussian policy?", "options": {"A": "Scalar value", "B": "Vector", "C": "Matrix", "D": "Tensor"}, "answer": "A", "explanation": "", "sourceUrl": "https://quizlet.com/vn/1234867796/rel301m_su26_fe_335344-flash-cards/"}, {"id": "su26_fe_12", "setId": "su26_fe", "setTitle": "SU26", "num": 12, "question": "Which of the following statements is true about Q-learning?", "options": {"A": "It is a sample-based version of policy iteration.", "B": "It uses the Bellman equation for action values.", "C": "It can converge to the optimal value function with sufficient exploration.", "D": "It requires prior knowledge of the environment's dynamics."}, "answer": "C", "explanation": "", "sourceUrl": "https://quizlet.com/vn/1234867796/rel301m_su26_fe_335344-flash-cards/"}, {"id": "su26_fe_13", "setId": "su26_fe", "setTitle": "SU26", "num": 13, "question": "What is the target policy in off policy learning?", "options": {"A": "The policy used to select actions", "B": "The policy that the agent is learning about", "C": "The policy that generates data", "D": "The policy that evaluates the value function"}, "answer": "B", "explanation": "", "sourceUrl": "https://quizlet.com/vn/1234867796/rel301m_su26_fe_335344-flash-cards/"}, {"id": "su26_fe_14", "setId": "su26_fe", "setTitle": "SU26", "num": 14, "question": "Which of the following is a potential disadvantage of Random Tabular Q-planning?", "options": {"A": "It requires a model of the environment.", "B": "It may converge slower due to random updates.", "C": "It is not applicable to large state spaces.", "D": "It cannot handle stochastic environments."}, "answer": "B", "explanation": "", "sourceUrl": "https://quizlet.com/vn/1234867796/rel301m_su26_fe_335344-flash-cards/"}, {"id": "su26_fe_15", "setId": "su26_fe", "setTitle": "SU26", "num": 15, "question": "What is discrimination in the context of learning and behavior?", "options": {"A": "The process by which a response spreads from one specific stimulus to other stimuli that resemble the original.", "B": "The ability to respond differently to similar but distinct stimuli.", "C": "The reinforcement of a behavior in order to increase its frequency.", "D": "The gradual weakening and disappearance of a conditioned response."}, "answer": "B", "explanation": "", "sourceUrl": "https://quizlet.com/vn/1234867796/rel301m_su26_fe_335344-flash-cards/"}, {"id": "su26_fe_16", "setId": "su26_fe", "setTitle": "SU26", "num": 16, "question": "Which factor influences the stability of policy gradient algorithms during training?", "options": {"A": "Learning rate", "B": "Discount factor", "C": "Exploration rate", "D": "Entropy regularization"}, "answer": "A", "explanation": "", "sourceUrl": "https://quizlet.com/vn/1234867796/rel301m_su26_fe_335344-flash-cards/"}, {"id": "su26_fe_17", "setId": "su26_fe", "setTitle": "SU26", "num": 17, "question": "What is the primary difference between Dyna-Q and Q-learning?", "options": {"A": "Dyna-Q uses a model of the environment", "B": "Q-learning updates Q-values online", "C": "Q-learning is model-free, while Dyna-Q is model-based", "D": "Dyna-Q is less prone to overestimation bias"}, "answer": "A", "explanation": "", "sourceUrl": "https://quizlet.com/vn/1234867796/rel301m_su26_fe_335344-flash-cards/"}, {"id": "su26_fe_18", "setId": "su26_fe", "setTitle": "SU26", "num": 18, "question": "The concept of Dyna Architecture is closely associated with which field?", "options": {"A": "Artificial Intelligence", "B": "Cybersecurity", "C": "Software Engineering", "D": "Network Management"}, "answer": "A", "explanation": "", "sourceUrl": "https://quizlet.com/vn/1234867796/rel301m_su26_fe_335344-flash-cards/"}, {"id": "su26_fe_19", "setId": "su26_fe", "setTitle": "SU26", "num": 19, "question": "Which type of task is more likely to involve checkpoints or milestones?", "options": {"A": "Episodic tasks.", "B": "Continuing tasks.", "C": "Both episodic and continuing tasks.", "D": "Neither episodic nor continuing tasks."}, "answer": "A", "explanation": "", "sourceUrl": "https://quizlet.com/vn/1234867796/rel301m_su26_fe_335344-flash-cards/"}, {"id": "su26_fe_20", "setId": "su26_fe", "setTitle": "SU26", "num": 20, "question": "Which algorithm is commonly used to estimate action values in model-free reinforcement learning?", "options": {"A": "Monte Carlo Methods", "B": "Value Iteration", "C": "Q-Learning", "D": "Policy Gradient Methods"}, "answer": "C", "explanation": "", "sourceUrl": "https://quizlet.com/vn/1234867796/rel301m_su26_fe_335344-flash-cards/"}, {"id": "su26_fe_21", "setId": "su26_fe", "setTitle": "SU26", "num": 21, "question": "What is the task of policy evaluation?", "options": {"A": "To find a new policy that maximizes rewards", "B": "To determine the state value function for a specific policy", "C": "To compute the dynamics of the environment", "D": "To reduce the problem of finding v pi to a system of linear equations"}, "answer": "B", "explanation": "", "sourceUrl": "https://quizlet.com/vn/1234867796/rel301m_su26_fe_335344-flash-cards/"}, {"id": "su26_fe_22", "setId": "su26_fe", "setTitle": "SU26", "num": 22, "question": "When using function approximation with optimistic initial values, which type of function approximation method can be used?", "options": {"A": "Linear function approximation", "B": "Neural networks", "C": "Decision trees", "D": "All of the above"}, "answer": "D", "explanation": "", "sourceUrl": "https://quizlet.com/vn/1234867796/rel301m_su26_fe_335344-flash-cards/"}, {"id": "su26_fe_23", "setId": "su26_fe", "setTitle": "SU26", "num": 23, "question": "Which of the following statements is true regarding the optimal value function (v star)?", "options": {"A": "It is always negative.", "B": "It can be used to derive the optimal policy.", "C": "It is independent of the dynamics function p.", "D": "It only applies to deterministic environments."}, "answer": "B", "explanation": "", "sourceUrl": "https://quizlet.com/vn/1234867796/rel301m_su26_fe_335344-flash-cards/"}, {"id": "su26_fe_24", "setId": "su26_fe", "setTitle": "SU26", "num": 24, "question": "What does the Q-learning update with function approximation replace in expected Sarsa?", "options": {"A": "The action value with a random value", "B": "The expectation with the maximum action value", "C": "The weight vector with a fixed value", "D": "The target policy with a uniform policy"}, "answer": "B", "explanation": "", "sourceUrl": "https://quizlet.com/vn/1234867796/rel301m_su26_fe_335344-flash-cards/"}, {"id": "su26_fe_25", "setId": "su26_fe", "setTitle": "SU26", "num": 25, "question": "How does the Epsilon-greedy strategy decide whether to explore or exploit?", "options": {"A": "It uses a random number generator to choose between exploring or exploiting", "B": "It always explores for the first half of the time and exploits for the second half", "C": "It explores if a randomly generated number is less than epsilon", "D": "It exploits if a randomly generated number is less than epsilon"}, "answer": "C", "explanation": "", "sourceUrl": "https://quizlet.com/vn/1234867796/rel301m_su26_fe_335344-flash-cards/"}, {"id": "su26_fe_26", "setId": "su26_fe", "setTitle": "SU26", "num": 26, "question": "What is the primary goal when maintaining a website with millions of hits a day in the context of the k-armed bandit problem?", "options": {"A": "To increase the number of ads displayed", "B": "To display the ad that generates the most money", "C": "To reduce the loading time of the website", "D": "To track user behavior"}, "answer": "B", "explanation": "", "sourceUrl": "https://quizlet.com/vn/1234867796/rel301m_su26_fe_335344-flash-cards/"}, {"id": "su26_fe_27", "setId": "su26_fe", "setTitle": "SU26", "num": 27, "question": "In Off-policy Learning, why must the behavior policy b cover the target policy π?", "options": {"A": "To ensure equal probability for all actions in each state.", "B": "To guarantee that actions used by n can also be sampled by b.", "C": "To force the behavior policy to match the target policy exactly.", "D": "To ensure that each state is visited only once during training."}, "answer": "B", "explanation": "", "sourceUrl": "https://quizlet.com/vn/1234867796/rel301m_su26_fe_335344-flash-cards/"}, {"id": "su26_fe_28", "setId": "su26_fe", "setTitle": "SU26", "num": 28, "question": "Which of the following statements is true about dynamic programming in reinforcement learning?", "options": {"A": "It is only applicable to problems with discrete action spaces", "B": "It always guarantees convergence to the globally optimal policy", "C": "It is computationally efficient for problems with continuous state spaces", "D": "It is primarily used for deep reinforcement learning tasks"}, "answer": "B", "explanation": "", "sourceUrl": "https://quizlet.com/vn/1234867796/rel301m_su26_fe_335344-flash-cards/"}, {"id": "su26_fe_29", "setId": "su26_fe", "setTitle": "SU26", "num": 29, "question": "Why is it difficult to ensure accurate navigation for star exploration missions?", "options": {"A": "Stars are invisible from Earth.", "B": "There is no way to measure distances accurately in space.", "C": "The vast distances cause significant deviations from intended paths.", "D": "Spacecraft cannot carry enough fuel."}, "answer": "C", "explanation": "", "sourceUrl": "https://quizlet.com/vn/1234867796/rel301m_su26_fe_335344-flash-cards/"}, {"id": "su26_fe_30", "setId": "su26_fe", "setTitle": "SU26", "num": 30, "question": "In reinforcement learning, what is a common downside of pure exploitation without exploration?", "options": {"A": "Increased computational complexity.", "B": "Missing out on potentially better actions that haven't been tried enough.", "C": "High variance in reward estimation.", "D": "Difficulty in policy convergence to get maximum the total rewards"}, "answer": "B", "explanation": "", "sourceUrl": "https://quizlet.com/vn/1234867796/rel301m_su26_fe_335344-flash-cards/"}, {"id": "su26_fe_31", "setId": "su26_fe", "setTitle": "SU26", "num": 31, "question": "What is the main shape used in tile coding to partition the state space?", "options": {"A": "Circles", "B": "Triangles", "C": "Squares", "D": "Hexagons"}, "answer": "C", "explanation": "", "sourceUrl": "https://quizlet.com/vn/1234867796/rel301m_su26_fe_335344-flash-cards/"}, {"id": "su26_fe_32", "setId": "su26_fe", "setTitle": "SU26", "num": 32, "question": "In the context of Deep Q-Learning, what purpose does the target network serve?", "options": {"A": "It helps in selecting actions based on the policy", "B": "It stabilizes training by providing consistent target values", "C": "It generates synthetic experiences for training", "D": "It models the transition probabilities between states"}, "answer": "B", "explanation": "", "sourceUrl": "https://quizlet.com/vn/1234867796/rel301m_su26_fe_335344-flash-cards/"}, {"id": "su26_fe_33", "setId": "su26_fe", "setTitle": "SU26", "num": 33, "question": "What does the curse of dimensionality refer to in reinforcement learning?", "options": {"A": "The increase in the number of actions available", "B": "The exponential growth of the state space as the number of state variables increases", "C": "The difficulty of finding an optimal policy", "D": "The limitation of using Monte Carlo methods"}, "answer": "B", "explanation": "", "sourceUrl": "https://quizlet.com/vn/1234867796/rel301m_su26_fe_335344-flash-cards/"}, {"id": "su26_fe_34", "setId": "su26_fe", "setTitle": "SU26", "num": 34, "question": "Why is it problematic to predict the outcomes of star exploration missions?", "options": {"A": "There is too much public interest.", "B": "The lack of advanced computer models.", "C": "Uncertainties and unknown variables in space.", "D": "Predicting outcomes is unnecessary."}, "answer": "C", "explanation": "", "sourceUrl": "https://quizlet.com/vn/1234867796/rel301m_su26_fe_335344-flash-cards/"}, {"id": "su26_fe_35", "setId": "su26_fe", "setTitle": "SU26", "num": 35, "question": "In Iterative Policy Evaluation, what does the value function represent?", "options": {"A": "The probability of selecting an action in a given state", "B": "The expected cumulative reward starting from a given state and following a specific policy", "C": "The policy's exploration rate", "D": "The action-value function"}, "answer": "B", "explanation": "", "sourceUrl": "https://quizlet.com/vn/1234867796/rel301m_su26_fe_335344-flash-cards/"}, {"id": "su26_fe_36", "setId": "su26_fe", "setTitle": "SU26", "num": 36, "question": "What is the primary focus of sample-based models in reinforcement learning?", "options": {"A": "Modeling the environment's entire distribution", "B": "Learning from direct interactions with the environment", "C": "Using theoretical distributions for decision-making", "D": "Predicting future states without actual sampling"}, "answer": "B", "explanation": "", "sourceUrl": "https://quizlet.com/vn/1234867796/rel301m_su26_fe_335344-flash-cards/"}, {"id": "su26_fe_37", "setId": "su26_fe", "setTitle": "SU26", "num": 37, "question": "Why is the discount factor (γ) important in reinforcement learning algorithms like Episodic Sarsa?", "options": {"A": "It controls the agent's learning rate", "B": "It balances immediate and future rewards", "C": "It dictates the exploration strategy", "D": "It scales the state transition probabilities"}, "answer": "B", "explanation": "", "sourceUrl": "https://quizlet.com/vn/1234867796/rel301m_su26_fe_335344-flash-cards/"}, {"id": "su26_fe_38", "setId": "su26_fe", "setTitle": "SU26", "num": 38, "question": "What is the common parameterized function used in reinforcement learning to approximate value functions?", "options": {"A": "Linear regression", "B": "Polynomial regression", "C": "Neural networks", "D": "Decision trees"}, "answer": "C", "explanation": "", "sourceUrl": "https://quizlet.com/vn/1234867796/rel301m_su26_fe_335344-flash-cards/"}, {"id": "su26_fe_39", "setId": "su26_fe", "setTitle": "SU26", "num": 39, "question": "Why is it important to specify an objective in policy evaluation under function approximation?", "options": {"A": "To ensure the algorithm runs faster", "B": "To adapt weights for minimizing value error", "C": "To increase the complexity of the model", "D": "To avoid overfitting"}, "answer": "B", "explanation": "", "sourceUrl": "https://quizlet.com/vn/1234867796/rel301m_su26_fe_335344-flash-cards/"}, {"id": "su26_fe_40", "setId": "su26_fe", "setTitle": "SU26", "num": 40, "question": "In which type of environments is state aggregation particularly useful?", "options": {"A": "Environments with a very small state space.", "B": "Environments with deterministic transitions.", "C": "Environments with a very large or continuous state space.", "D": "Environments with no reward structure."}, "answer": "C", "explanation": "", "sourceUrl": "https://quizlet.com/vn/1234867796/rel301m_su26_fe_335344-flash-cards/"}, {"id": "su26_fe_41", "setId": "su26_fe", "setTitle": "SU26", "num": 41, "question": "What is the primary objective in the k-armed bandit problem?", "options": {"A": "To minimize the number of arms used.", "B": "To maximize the cumulative reward over time.", "C": "To balance the use of all arms equally.", "D": "To minimize the variance of rewards."}, "answer": "B", "explanation": "", "sourceUrl": "https://quizlet.com/vn/1234867796/rel301m_su26_fe_335344-flash-cards/"}, {"id": "su26_fe_42", "setId": "su26_fe", "setTitle": "SU26", "num": 42, "question": "What is a significant drawback of distribution models in reinforcement learning?", "options": {"A": "They cannot handle large state spaces", "B": "They require extensive prior knowledge of the environment", "C": "They are not scalable to real-world applications", "D": "They converge slower than sample-based models"}, "answer": "B", "explanation": "", "sourceUrl": "https://quizlet.com/vn/1234867796/rel301m_su26_fe_335344-flash-cards/"}, {"id": "su26_fe_43", "setId": "su26_fe", "setTitle": "SU26", "num": 43, "question": "What is the typical initial value for the Q-table in Q-learning?", "options": {"A": "Random values", "B": "Infinity", "C": "Zero", "D": "One"}, "answer": "C", "explanation": "", "sourceUrl": "https://quizlet.com/vn/1234867796/rel301m_su26_fe_335344-flash-cards/"}, {"id": "su26_fe_44", "setId": "su26_fe", "setTitle": "SU26", "num": 44, "question": "How does coarse coding help in handling large state spaces in reinforcement learning?", "options": {"A": "By dividing the state space into non-overlapping regions", "B": "By using a high-dimensional binary feature vector for each state", "C": "By approximating value functions over a coarsely divided state space", "D": "By applying a hierarchical approach to action selection"}, "answer": "C", "explanation": "", "sourceUrl": "https://quizlet.com/vn/1234867796/rel301m_su26_fe_335344-flash-cards/"}, {"id": "su26_fe_45", "setId": "su26_fe", "setTitle": "SU26", "num": 45, "question": "In Importance Sampling, why can estimates become highly variable when the behavior policy b differs significantly from the target policy π?", "options": {"A": "Because rewards are always stochastic.", "B": "Because large weights appear when b(x) is small.", "C": "Because policies become deterministic over time.", "D": "Because value functions cannot be normalized properly."}, "answer": "B", "explanation": "", "sourceUrl": "https://quizlet.com/vn/1234867796/rel301m_su26_fe_335344-flash-cards/"}, {"id": "su26_fe_46", "setId": "su26_fe", "setTitle": "SU26", "num": 46, "question": "Which property ensures that all states can be reached from any other state in an MDP?", "options": {"A": "Completeness", "B": "Determinism", "C": "Ergodicity", "D": "Consistency"}, "answer": "C", "explanation": "", "sourceUrl": "https://quizlet.com/vn/1234867796/rel301m_su26_fe_335344-flash-cards/"}, {"id": "su26_fe_47", "setId": "su26_fe", "setTitle": "SU26", "num": 47, "question": "What is the role of the exploration constant C in the Upper Confidence Bound formula used in MCTS?", "options": {"A": "It determines the rate at which new nodes are expanded", "B": "It scales the reward values", "C": "It balances the trade-off between exploration and exploitation", "D": "It controls the depth of the search tree"}, "answer": "C", "explanation": "", "sourceUrl": "https://quizlet.com/vn/1234867796/rel301m_su26_fe_335344-flash-cards/"}, {"id": "su26_fe_48", "setId": "su26_fe", "setTitle": "SU26", "num": 48, "question": "What role does the target policy play in off-policy learning?", "options": {"A": "It defines the behavior policy", "B": "It defines the policy being learned and improved", "C": "It defines the reward function", "D": "It defines the exploration strategy"}, "answer": "B", "explanation": "", "sourceUrl": "https://quizlet.com/vn/1234867796/rel301m_su26_fe_335344-flash-cards/"}, {"id": "su26_fe_49", "setId": "su26_fe", "setTitle": "SU26", "num": 49, "question": "Which of the following is a potential drawback of off-policy learning?", "options": {"A": "It requires extensive domain knowledge", "B": "It can lead to instability in learning", "C": "It is computationally inefficient", "D": "It is only suitable for discrete action spaces"}, "answer": "B", "explanation": "", "sourceUrl": "https://quizlet.com/vn/1234867796/rel301m_su26_fe_335344-flash-cards/"}, {"id": "su26_fe_50", "setId": "su26_fe", "setTitle": "SU26", "num": 50, "question": "Which principle explains why a person might fear all dogs after being bitten by one?", "options": {"A": "Extinction", "B": "Generalization", "C": "Discrimination", "D": "Spontaneous recovery"}, "answer": "B", "explanation": "", "sourceUrl": "https://quizlet.com/vn/1234867796/rel301m_su26_fe_335344-flash-cards/"}]};
+    const STORAGE_KEY = 'rel301m_rl_progress_v1';
+
+    function createDefaultProgress() {
+      return {
+        activeMode: 'learn',
+        activeDeck: 'all_rl',
+        statusFilter: 'all',
+        darkMode: false,
+        learnShuffleOpts: false,
+        sourceOrderMigrated: true,
+        learnAutoNext: true,
+        masteryGoal: 2,
+        roundSize: 7,
+        roundNumber: 1,
+        browseHideAnswers: false,
+        cards: {},
+        examHistory: []
+      };
+    }
+
+    let memoryFallbackState = createDefaultProgress();
+
+    function loadProgress() {
+      try {
+        const raw = window.localStorage.getItem(STORAGE_KEY);
+        if (!raw) return createDefaultProgress();
+        const parsed = JSON.parse(raw);
+        const merged = Object.assign(createDefaultProgress(), parsed, {
+          cards: parsed.cards || {},
+          examHistory: Array.isArray(parsed.examHistory) ? parsed.examHistory : []
+        });
+        if (!parsed.sourceOrderMigrated) {
+          merged.learnShuffleOpts = false;
+          merged.sourceOrderMigrated = true;
+        }
+        if (merged.activeMode !== 'learn' && merged.activeMode !== 'exam' && merged.activeMode !== 'browse') {
+          merged.activeMode = 'learn';
+        }
+        return merged;
+      } catch (err) {
+        return memoryFallbackState;
+      }
+    }
+
+    let appState = loadProgress();
+    let toastTimer = null;
+    let autoAdvanceTimer = null;
+
+    function clearAutoAdvance() {
+      if (autoAdvanceTimer) {
+        clearTimeout(autoAdvanceTimer);
+        autoAdvanceTimer = null;
+      }
+    }
+
+    function saveProgress() {
+      memoryFallbackState = appState;
+      const dot = document.getElementById('saveStatusLabel');
+      try {
+        window.localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
+        if (dot) dot.className = 'w-2 h-2 rounded-full bg-emerald-500 inline-block';
+      } catch (err) {
+        if (dot) dot.className = 'w-2 h-2 rounded-full bg-amber-500 inline-block';
+      }
+    }
+
+    function showToast(msg) {
+      const el = document.getElementById('toastBanner');
+      if (!el) return;
+      el.textContent = msg;
+      el.classList.remove('hidden');
+      if (toastTimer) clearTimeout(toastTimer);
+      toastTimer = setTimeout(function () {
+        el.classList.add('hidden');
+      }, 1800);
+    }
+
+    function escapeHtml(str) {
+      return String(str || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function getCardProgress(cardId) {
+      if (!appState.cards[cardId]) {
+        appState.cards[cardId] = {
+          status: 'unseen',
+          starred: false,
+          correctCount: 0,
+          wrongCount: 0,
+          streak: 0
+        };
+      }
+      return appState.cards[cardId];
+    }
+
+    function getCardsByDeck(deckId) {
+      if (deckId === 'all_rl') return STUDY_DATA.cards.slice();
+      if (deckId === 'weak_only') {
+        return STUDY_DATA.cards.filter(function (c) {
+          return getCardProgress(c.id).status === 'learning';
+        });
+      }
+      return STUDY_DATA.cards.filter(function (c) {
+        return c.setId === deckId;
+      });
+    }
+
+    function getFilteredCards() {
+      const base = getCardsByDeck(appState.activeDeck);
+      const f = appState.statusFilter;
+      if (f === 'all') return base;
+      if (f === 'starred') {
+        return base.filter(function (c) { return getCardProgress(c.id).starred; });
+      }
+      return base.filter(function (c) { return getCardProgress(c.id).status === f; });
+    }
+
+    function shuffleArray(arr) {
+      const copy = arr.slice();
+      for (let i = copy.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        const tmp = copy[i];
+        copy[i] = copy[j];
+        copy[j] = tmp;
+      }
+      return copy;
+    }
+
+    function applyTheme() {
+      const root = document.documentElement;
+      const moon = document.getElementById('themeIconMoon');
+      const sun = document.getElementById('themeIconSun');
+      if (appState.darkMode) {
+        root.classList.add('dark');
+        if (moon) moon.classList.add('hidden');
+        if (sun) sun.classList.remove('hidden');
+      } else {
+        root.classList.remove('dark');
+        if (moon) moon.classList.remove('hidden');
+        if (sun) sun.classList.add('hidden');
+      }
+    }
+
+    function renderMasteryDotsHtml(prog) {
+      const goal = parseInt(appState.masteryGoal, 10) || 2;
+      const filled = prog.status === 'mastered' ? goal : Math.min(goal - 1, prog.streak || (prog.status === 'learning' ? 1 : 0));
+      let dots = '';
+      for (let i = 0; i < goal; i++) {
+        const cls = i < filled
+          ? (prog.status === 'mastered' ? 'bg-emerald-500' : 'bg-indigo-500')
+          : 'bg-slate-200 dark:bg-slate-700';
+        dots += '<span class="w-2 h-2 rounded-full inline-block ' + cls + '"></span>';
+      }
+      return dots;
+    }
+
+    function renderDeckOverview() {
+      const deckContainer = document.getElementById('deckPillsContainer');
+      const deckOptions = [
+        { id: 'all_rl', label: 'All · 200' }
+      ].concat(STUDY_DATA.sets.map(function (s) {
+        return { id: s.id, label: s.shortTitle };
+      }));
+
+      deckContainer.innerHTML = deckOptions.map(function (d) {
+        const active = appState.activeDeck === d.id;
+        const cls = active
+          ? 'bg-indigo-600 text-white border-indigo-600'
+          : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800';
+        return '<button type="button" data-deck-select="' + d.id + '" class="px-2.5 py-1 rounded-lg text-xs font-semibold border transition-colors ' + cls + '">' + escapeHtml(d.label) + '</button>';
+      }).join('');
+
+      const linkSpan = document.getElementById('activeDeckSourceLinks');
+      if (appState.activeDeck === 'all_rl') {
+        linkSpan.innerHTML = '';
+      } else {
+        const foundSet = STUDY_DATA.sets.find(function (s) { return s.id === appState.activeDeck; });
+        linkSpan.innerHTML = foundSet
+          ? '<a href="' + escapeHtml(foundSet.url) + '" target="_blank" rel="noopener noreferrer" title="Open Quizlet set" class="px-1.5 py-0.5 rounded hover:bg-indigo-50 dark:hover:bg-indigo-950">↗</a>'
+          : '';
+      }
+
+      document.querySelectorAll('.status-pill').forEach(function (btn) {
+        const val = btn.getAttribute('data-status-filter');
+        if (val === appState.statusFilter) {
+          btn.className = 'status-pill px-2.5 py-1 rounded-lg text-xs font-semibold bg-slate-900 text-white dark:bg-white dark:text-slate-900 transition-colors';
+        } else {
+          btn.className = 'status-pill px-2.5 py-1 rounded-lg text-xs font-semibold bg-white dark:bg-slate-900 text-slate-500 border border-slate-200/80 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors';
+        }
+      });
+
+      const deckCards = getCardsByDeck(appState.activeDeck);
+      let mastered = 0, learning = 0, unseen = 0, starred = 0;
+      deckCards.forEach(function (c) {
+        const p = getCardProgress(c.id);
+        if (p.status === 'mastered') mastered++;
+        else if (p.status === 'learning') learning++;
+        else unseen++;
+        if (p.starred) starred++;
+      });
+      const total = deckCards.length || 1;
+      const pct = Math.round((mastered / total) * 100);
+
+      document.getElementById('statMasteredCount').textContent = String(mastered);
+      document.getElementById('statLearningCount').textContent = String(learning);
+      document.getElementById('statUnseenCount').textContent = String(unseen);
+      document.getElementById('statStarredCount').textContent = String(starred);
+      document.getElementById('statMasteryPercent').textContent = pct + '%';
+      document.getElementById('barMastered').style.width = ((mastered / total) * 100).toFixed(1) + '%';
+      document.getElementById('barLearning').style.width = ((learning / total) * 100).toFixed(1) + '%';
+    }
+
+    // ==================== QUIZLET LEARN ENGINE ====================
+    let learnState = {
+      queue: [],
+      roundCardIds: [],
+      passedInRound: 0,
+      roundTotal: 0,
+      answeredCurrent: false,
+      lastOutcomeCorrect: false,
+      currentOptionOrder: ['A', 'B', 'C', 'D']
+    };
+
+    function startNewLearnRound(incrementRound) {
+      clearAutoAdvance();
+      if (incrementRound) {
+        appState.roundNumber = (appState.roundNumber || 1) + 1;
+        saveProgress();
+      }
+
+      const pool = getFilteredCards();
+      const emptyEl = document.getElementById('learnEmptyState');
+      const workEl = document.getElementById('learnWorkspace');
+      if (pool.length === 0) {
+        emptyEl.classList.remove('hidden');
+        workEl.classList.add('hidden');
+        return;
+      }
+      emptyEl.classList.add('hidden');
+      workEl.classList.remove('hidden');
+
+      const rSize = parseInt(appState.roundSize, 10) || 7;
+      // Quizlet Learn priority: Familiar/Learning -> New/Unseen -> Mastered review
+      const learningCards = shuffleArray(pool.filter(function (c) { return getCardProgress(c.id).status === 'learning'; }));
+      const unseenCards = shuffleArray(pool.filter(function (c) { return getCardProgress(c.id).status === 'unseen'; }));
+      const masteredCards = shuffleArray(pool.filter(function (c) { return getCardProgress(c.id).status === 'mastered'; }));
+      const prioritized = learningCards.concat(unseenCards, masteredCards).slice(0, rSize);
+
+      learnState.roundCardIds = prioritized.map(function (c) { return c.id; });
+      learnState.queue = prioritized.map(function (c) {
+        return { cardId: c.id, isRetry: false };
+      });
+      learnState.passedInRound = 0;
+      learnState.roundTotal = learnState.queue.length;
+      learnState.answeredCurrent = false;
+      prepareCurrentLearnOptions();
+      renderLearnView();
+    }
+
+    function prepareCurrentLearnOptions() {
+      const letters = ['A', 'B', 'C', 'D'];
+      learnState.currentOptionOrder = appState.learnShuffleOpts ? shuffleArray(letters) : letters;
+    }
+
+    function renderLearnView() {
+      const pool = getFilteredCards();
+      const emptyEl = document.getElementById('learnEmptyState');
+      const workEl = document.getElementById('learnWorkspace');
+      if (pool.length === 0 && learnState.queue.length === 0) {
+        emptyEl.classList.remove('hidden');
+        workEl.classList.add('hidden');
+        return;
+      }
+      emptyEl.classList.add('hidden');
+      workEl.classList.remove('hidden');
+
+      document.getElementById('learnRoundBadge').textContent = 'R' + (appState.roundNumber || 1);
+      const totalInR = learnState.roundTotal || 1;
+      const pctR = Math.min(100, Math.round((learnState.passedInRound / totalInR) * 100));
+      document.getElementById('learnRoundBar').style.width = pctR + '%';
+      document.getElementById('learnRoundProgressText').textContent = learnState.passedInRound + ' / ' + learnState.roundTotal;
+
+      const qCard = document.getElementById('learnQuestionCard');
+      const sumCard = document.getElementById('learnRoundSummary');
+
+      if (learnState.queue.length === 0) {
+        qCard.classList.add('hidden');
+        sumCard.classList.remove('hidden');
+        document.getElementById('learnCompleteHeading').textContent = 'Round ' + (appState.roundNumber || 1) + ' complete!';
+        const deckCards = getCardsByDeck(appState.activeDeck);
+        const masteredCount = deckCards.filter(function (c) { return getCardProgress(c.id).status === 'mastered'; }).length;
+        const familiarCount = deckCards.filter(function (c) { return getCardProgress(c.id).status === 'learning'; }).length;
+        document.getElementById('learnCompleteSubtext').textContent =
+          'Mastered ' + masteredCount + ' · Familiar ' + familiarCount + ' / ' + deckCards.length;
+
+        const recapEl = document.getElementById('learnRoundRecapList');
+        recapEl.innerHTML = learnState.roundCardIds.map(function (cid) {
+          const c = STUDY_DATA.cards.find(function (x) { return x.id === cid; });
+          if (!c) return '';
+          const p = getCardProgress(c.id);
+          return '<div class="py-2.5 flex items-center justify-between gap-3 text-xs sm:text-sm">' +
+            '<div class="min-w-0 flex-1">' +
+              '<p class="font-medium truncate text-slate-800 dark:text-slate-200">' + escapeHtml(c.question) + '</p>' +
+              '<p class="text-xs text-emerald-600 dark:text-emerald-400 truncate">' + escapeHtml(c.options[c.answer]) + '</p>' +
+            '</div>' +
+            '<div class="flex items-center gap-1.5 shrink-0">' + renderMasteryDotsHtml(p) + '</div>' +
+          '</div>';
+        }).join('');
+
+        if (typeof window.confetti === 'function') {
+          try { window.confetti({ particleCount: 45, spread: 55, origin: { y: 0.72 } }); } catch (e) {}
+        }
+        if (window.lucide) {
+          try { window.lucide.createIcons(); } catch (e) {}
+        }
+        return;
+      }
+
+      qCard.classList.remove('hidden');
+      sumCard.classList.add('hidden');
+
+      const currentItem = learnState.queue[0];
+      const card = STUDY_DATA.cards.find(function (c) { return c.id === currentItem.cardId; });
+      const prog = getCardProgress(card.id);
+
+      document.getElementById('learnSetBadge').textContent = card.setTitle + ' #' + card.num;
+      document.getElementById('learnMasteryDots').innerHTML = renderMasteryDotsHtml(prog);
+
+      const retryBadge = document.getElementById('learnRetryBadge');
+      if (currentItem.isRetry) retryBadge.classList.remove('hidden');
+      else retryBadge.classList.add('hidden');
+
+      document.getElementById('learnSourceLink').href = card.sourceUrl;
+      document.getElementById('btnLearnStar').className = prog.starred
+        ? 'p-1.5 rounded-lg text-amber-500 bg-amber-50 dark:bg-amber-950/50'
+        : 'p-1.5 rounded-lg text-slate-400 hover:text-amber-500 hover:bg-slate-100 dark:hover:bg-slate-800';
+
+      document.getElementById('learnQuestionText').textContent = card.question;
+      document.getElementById('learnFeedbackBox').classList.add('hidden');
+      document.getElementById('btnLearnDontKnow').classList.remove('hidden');
+      document.getElementById('learnPromptHint').textContent = 'Choose matching answer';
+
+      const optsContainer = document.getElementById('learnOptionsContainer');
+      optsContainer.innerHTML = learnState.currentOptionOrder.map(function (origKey, idx) {
+        const keyLabel = appState.learnShuffleOpts ? String(idx + 1) : origKey;
+        return '<button type="button" data-learn-choice="' + origKey + '" class="learn-opt-btn group w-full text-left px-4 py-3.5 rounded-xl border-2 border-slate-200/90 dark:border-slate-800 hover:border-indigo-500 dark:hover:border-indigo-400 bg-white dark:bg-slate-900 hover:bg-indigo-50/30 dark:hover:bg-indigo-950/20 flex items-start gap-3 transition-all">' +
+          '<span class="kbd-key group-hover:border-indigo-400 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 mt-0.5">' + keyLabel + '</span>' +
+          '<span class="text-sm sm:text-base font-medium leading-snug text-slate-800 dark:text-slate-100">' + escapeHtml(card.options[origKey]) + '</span>' +
+        '</button>';
+      }).join('');
+
+      if (window.lucide) {
+        try { window.lucide.createIcons(); } catch (e) {}
+      }
+    }
+
+    function evaluateLearnChoice(chosenOrigKey, isGiveUp) {
+      if (learnState.answeredCurrent || !learnState.queue.length) return;
+      learnState.answeredCurrent = true;
+      clearAutoAdvance();
+
+      const currentItem = learnState.queue[0];
+      const card = STUDY_DATA.cards.find(function (c) { return c.id === currentItem.cardId; });
+      const prog = getCardProgress(card.id);
+      const isCorrect = !isGiveUp && chosenOrigKey === card.answer;
+      const goal = parseInt(appState.masteryGoal, 10) || 2;
+
+      document.getElementById('btnLearnDontKnow').classList.add('hidden');
+
+      document.querySelectorAll('.learn-opt-btn').forEach(function (btn) {
+        const k = btn.getAttribute('data-learn-choice');
+        btn.disabled = true;
+        if (k === card.answer) {
+          btn.className = 'learn-opt-btn w-full text-left px-4 py-3.5 rounded-xl border-2 border-emerald-500 bg-emerald-50/90 dark:bg-emerald-950/50 text-emerald-950 dark:text-emerald-100 flex items-start gap-3';
+        } else if (!isGiveUp && k === chosenOrigKey && !isCorrect) {
+          btn.className = 'learn-opt-btn w-full text-left px-4 py-3.5 rounded-xl border-2 border-rose-500 bg-rose-50/90 dark:bg-rose-950/50 text-rose-950 dark:text-rose-100 flex items-start gap-3';
+        } else {
+          btn.classList.add('opacity-45');
+        }
+      });
+
+      const fbBox = document.getElementById('learnFeedbackBox');
+      const fbTitle = document.getElementById('learnFeedbackTitle');
+      const fbDetail = document.getElementById('learnFeedbackDetail');
+
+      if (isCorrect) {
+        prog.correctCount += 1;
+        if (!currentItem.isRetry) {
+          prog.streak = (prog.streak || 0) + 1;
+        }
+        if (prog.streak >= goal) {
+          prog.status = 'mastered';
+        } else {
+          prog.status = 'learning';
+        }
+
+        document.getElementById('learnPromptHint').textContent = 'Correct!';
+        document.getElementById('learnMasteryDots').innerHTML = renderMasteryDotsHtml(prog);
+
+        if (appState.learnAutoNext && !card.explanation) {
+          fbBox.classList.add('hidden');
+          autoAdvanceTimer = setTimeout(function () {
+            advanceLearnStep();
+          }, 620);
+        } else if (appState.learnAutoNext && card.explanation) {
+          fbBox.classList.remove('hidden');
+          fbBox.className = 'rounded-xl p-3.5 border border-emerald-200 dark:border-emerald-800 bg-emerald-50/80 dark:bg-emerald-950/40 flex items-center justify-between gap-3';
+          fbTitle.className = 'font-bold text-xs sm:text-sm text-emerald-800 dark:text-emerald-300';
+          fbTitle.textContent = 'Nice!';
+          fbDetail.className = 'text-xs text-emerald-900 dark:text-emerald-200';
+          fbDetail.textContent = card.explanation;
+          autoAdvanceTimer = setTimeout(function () {
+            advanceLearnStep();
+          }, 1350);
+        } else {
+          fbBox.classList.remove('hidden');
+          fbBox.className = 'rounded-xl p-3.5 border border-emerald-200 dark:border-emerald-800 bg-emerald-50/80 dark:bg-emerald-950/40 flex items-center justify-between gap-3';
+          fbTitle.className = 'font-bold text-xs sm:text-sm text-emerald-800 dark:text-emerald-300';
+          fbTitle.textContent = 'Nice!';
+          fbDetail.className = 'text-xs text-emerald-900 dark:text-emerald-200';
+          fbDetail.textContent = card.explanation || '';
+        }
+      } else {
+        prog.wrongCount += 1;
+        prog.streak = 0;
+        prog.status = 'learning';
+        document.getElementById('learnPromptHint').textContent = isGiveUp ? 'Study this one' : 'Not quite — will repeat this round';
+        document.getElementById('learnMasteryDots').innerHTML = renderMasteryDotsHtml(prog);
+
+        fbBox.classList.remove('hidden');
+        fbBox.className = 'rounded-xl p-3.5 border border-rose-200 dark:border-rose-800 bg-rose-50/80 dark:bg-rose-950/40 flex items-center justify-between gap-3';
+        fbTitle.className = 'font-bold text-xs sm:text-sm text-rose-800 dark:text-rose-300';
+        fbTitle.textContent = isGiveUp ? 'Answer' : 'Study this one';
+        fbDetail.className = 'text-xs text-rose-900 dark:text-rose-200';
+        fbDetail.textContent = card.explanation || card.options[card.answer];
+      }
+
+      learnState.lastOutcomeCorrect = isCorrect;
+      saveProgress();
+      renderDeckOverview();
+    }
+
+    function advanceLearnStep() {
+      clearAutoAdvance();
+      if (!learnState.answeredCurrent || !learnState.queue.length) return;
+      const finishedItem = learnState.queue.shift();
+      if (learnState.lastOutcomeCorrect) {
+        learnState.passedInRound += 1;
+      } else {
+        learnState.queue.push({ cardId: finishedItem.cardId, isRetry: true });
+      }
+      learnState.answeredCurrent = false;
+      prepareCurrentLearnOptions();
+      renderLearnView();
+    }
+
+    // ==================== MOCK TEST ENGINE ====================
+    let examSession = null;
+    let examReviewFilter = 'all';
+
+    function clearExamTimer() {
+      if (examSession && examSession.timerId) {
+        clearInterval(examSession.timerId);
+        examSession.timerId = null;
+      }
+    }
+
+    function formatTimeSec(sec) {
+      const m = Math.floor(sec / 60);
+      const s = sec % 60;
+      return String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
+    }
+
+    function renderExamHistory() {
+      const listEl = document.getElementById('examHistoryList');
+      const cntEl = document.getElementById('examHistoryCount');
+      const hist = appState.examHistory || [];
+      cntEl.textContent = String(hist.length);
+      if (hist.length === 0) {
+        listEl.innerHTML = '<div class="text-xs text-slate-400 py-6 text-center">Empty</div>';
+        return;
+      }
+      listEl.innerHTML = hist.map(function (h) {
+        const badgeCls = h.score10 >= 8
+          ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300'
+          : (h.score10 >= 5 ? 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300' : 'bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300');
+        return '<div class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 flex items-center justify-between gap-2">' +
+          '<div class="min-w-0">' +
+            '<div class="text-xs font-semibold truncate">' + escapeHtml(h.deckLabel) + '</div>' +
+            '<div class="text-[11px] font-mono text-slate-400">' + escapeHtml(h.date) + ' · ' + h.correct + '/' + h.total + '</div>' +
+          '</div>' +
+          '<span class="px-2 py-0.5 rounded-md font-mono font-bold text-xs shrink-0 ' + badgeCls + '">' + h.score10.toFixed(1) + '</span>' +
+        '</div>';
+      }).join('');
+    }
+
+    function startMockExam() {
+      const deckVal = document.getElementById('selExamDeck').value;
+      const reqCount = parseInt(document.getElementById('selExamCount').value, 10) || 50;
+      const mins = parseInt(document.getElementById('selExamTimer').value, 10) || 0;
+      const shufQ = document.getElementById('chkExamShuffleQ').checked;
+      const shufOpt = document.getElementById('chkExamShuffleOpt').checked;
+
+      let pool = getCardsByDeck(deckVal);
+      const noticeEl = document.getElementById('examSetupNotice');
+      if (pool.length === 0) {
+        noticeEl.textContent = 'No cards in Familiar / Wrong yet.';
+        noticeEl.classList.remove('hidden');
+        return;
+      }
+      noticeEl.classList.add('hidden');
+
+      if (shufQ) pool = shuffleArray(pool);
+      const selected = pool.slice(0, Math.min(reqCount, pool.length));
+      const deckLabel = document.getElementById('selExamDeck').options[document.getElementById('selExamDeck').selectedIndex].text;
+
+      clearExamTimer();
+      examSession = {
+        deckLabel: deckLabel,
+        items: selected.map(function (c) {
+          return {
+            card: c,
+            optOrder: shufOpt ? shuffleArray(['A', 'B', 'C', 'D']) : ['A', 'B', 'C', 'D'],
+            selectedOrigKey: null,
+            flagged: false
+          };
+        }),
+        currentIndex: 0,
+        limitSec: mins * 60,
+        remainingSec: mins * 60,
+        elapsedSec: 0,
+        timerId: null,
+        submitted: false
+      };
+
+      document.getElementById('examSetupPanel').classList.add('hidden');
+      document.getElementById('examResultPanel').classList.add('hidden');
+      document.getElementById('examActivePanel').classList.remove('hidden');
+
+      examSession.timerId = setInterval(function () {
+        if (!examSession || examSession.submitted) return;
+        examSession.elapsedSec += 1;
+        if (examSession.limitSec > 0) {
+          examSession.remainingSec -= 1;
+          if (examSession.remainingSec <= 0) {
+            examSession.remainingSec = 0;
+            finishMockExam();
+            showToast('Time up!');
+            return;
+          }
+        }
+        updateExamTimerUi();
+      }, 1000);
+
+      updateExamTimerUi();
+      renderActiveExamQuestion();
+    }
+
+    function updateExamTimerUi() {
+      if (!examSession) return;
+      const el = document.getElementById('examTimerDisplay');
+      if (examSession.limitSec > 0) {
+        el.textContent = formatTimeSec(examSession.remainingSec);
+        el.className = examSession.remainingSec <= 120
+          ? 'font-mono font-bold text-base text-rose-600 animate-pulse'
+          : 'font-mono font-bold text-base text-indigo-600 dark:text-indigo-400';
+      } else {
+        el.textContent = formatTimeSec(examSession.elapsedSec);
+        el.className = 'font-mono font-bold text-base text-indigo-600 dark:text-indigo-400';
+      }
+    }
+
+    function renderActiveExamQuestion() {
+      if (!examSession) return;
+      const idx = examSession.currentIndex;
+      const total = examSession.items.length;
+      const item = examSession.items[idx];
+
+      document.getElementById('examQIndexBadge').textContent = (idx + 1) + ' / ' + total;
+      document.getElementById('examQSetBadge').textContent = item.card.setTitle;
+      document.getElementById('examQuestionText').textContent = item.card.question;
+
+      const flagBtn = document.getElementById('btnExamFlag');
+      const flagLbl = document.getElementById('examFlagLabel');
+      if (item.flagged) {
+        flagBtn.className = 'px-2.5 py-1 rounded-lg text-xs font-semibold border border-amber-400 bg-amber-50 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300 flex items-center gap-1';
+        flagLbl.textContent = 'Flagged';
+      } else {
+        flagBtn.className = 'px-2.5 py-1 rounded-lg text-xs font-semibold border border-slate-200 dark:border-slate-700 text-slate-500 flex items-center gap-1';
+        flagLbl.textContent = 'Flag';
+      }
+
+      document.getElementById('examOptionsList').innerHTML = item.optOrder.map(function (origK, pos) {
+        const selected = item.selectedOrigKey === origK;
+        const cls = selected
+          ? 'border-indigo-600 bg-indigo-50/90 dark:bg-indigo-950/60 text-indigo-950 dark:text-indigo-100'
+          : 'border-slate-200 dark:border-slate-800 hover:border-indigo-300 bg-white dark:bg-slate-900';
+        const badgeCls = selected
+          ? '!bg-indigo-600 !text-white !border-indigo-600'
+          : '';
+        return '<button type="button" data-exam-opt="' + origK + '" class="w-full text-left p-3.5 rounded-xl border-2 flex items-start gap-3 transition-all ' + cls + '">' +
+          '<span class="kbd-key mt-0.5 ' + badgeCls + '">' + origK + '</span>' +
+          '<span class="text-sm sm:text-base font-medium leading-snug">' + escapeHtml(item.card.options[origK]) + '</span>' +
+        '</button>';
+      }).join('');
+
+      document.getElementById('btnExamPrev').disabled = idx === 0;
+      document.getElementById('btnExamNext').disabled = idx === total - 1;
+
+      let answered = 0, flagged = 0;
+      examSession.items.forEach(function (it) {
+        if (it.selectedOrigKey) answered++;
+        if (it.flagged) flagged++;
+      });
+      document.getElementById('examAnsweredCount').textContent = answered + '/' + total;
+      document.getElementById('examFlaggedCount').textContent = String(flagged);
+
+      document.getElementById('examPaletteGrid').innerHTML = examSession.items.map(function (it, i) {
+        let cls = 'bg-slate-100 dark:bg-slate-800 text-slate-500 border-transparent';
+        if (it.selectedOrigKey) cls = 'bg-indigo-100 dark:bg-indigo-950 text-indigo-800 dark:text-indigo-200 border-indigo-300 dark:border-indigo-700';
+        if (it.flagged) cls = 'bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-200 border-amber-400';
+        if (i === idx) cls += ' ring-2 ring-indigo-600 dark:ring-indigo-400';
+        return '<button type="button" data-exam-jump="' + i + '" class="h-7 rounded-md border font-mono text-xs font-bold ' + cls + '">' + (i + 1) + '</button>';
+      }).join('');
+    }
+
+    function finishMockExam() {
+      if (!examSession || examSession.submitted) return;
+      examSession.submitted = true;
+      clearExamTimer();
+
+      let correct = 0;
+      const wrongCardIds = [];
+      examSession.items.forEach(function (it) {
+        const prog = getCardProgress(it.card.id);
+        if (it.selectedOrigKey === it.card.answer) {
+          correct += 1;
+          prog.correctCount += 1;
+          prog.streak = Math.max(prog.streak || 0, parseInt(appState.masteryGoal, 10) || 2);
+          prog.status = 'mastered';
+        } else {
+          prog.wrongCount += 1;
+          prog.streak = 0;
+          prog.status = 'learning';
+          wrongCardIds.push(it.card.id);
+        }
+      });
+
+      const total = examSession.items.length || 1;
+      const score10 = (correct / total) * 10;
+      const now = new Date();
+      const dateStr = String(now.getDate()).padStart(2, '0') + '/' + String(now.getMonth() + 1).padStart(2, '0');
+
+      appState.examHistory.unshift({
+        date: dateStr,
+        deckLabel: examSession.deckLabel,
+        correct: correct,
+        total: examSession.items.length,
+        score10: score10,
+        durationSec: examSession.elapsedSec
+      });
+      appState.examHistory = appState.examHistory.slice(0, 20);
+      examSession.wrongCardIds = wrongCardIds;
+
+      saveProgress();
+      renderDeckOverview();
+      renderExamHistory();
+
+      document.getElementById('examActivePanel').classList.add('hidden');
+      document.getElementById('examResultPanel').classList.remove('hidden');
+
+      const pct = Math.round((correct / total) * 100);
+      document.getElementById('examResultScoreHeadline').textContent = score10.toFixed(1) + ' / 10 (' + pct + '%)';
+      document.getElementById('examResultMeta').textContent = correct + '/' + examSession.items.length + ' · ' + formatTimeSec(examSession.elapsedSec);
+
+      const btnWrong = document.getElementById('btnPracticeWrongExam');
+      if (wrongCardIds.length > 0) {
+        btnWrong.classList.remove('hidden');
+        btnWrong.textContent = 'Learn ' + wrongCardIds.length + ' missed';
+      } else {
+        btnWrong.classList.add('hidden');
+      }
+
+      examReviewFilter = 'all';
+      renderExamReviewList();
+    }
+
+    function renderExamReviewList() {
+      if (!examSession) return;
+      document.querySelectorAll('.exam-rev-pill').forEach(function (btn) {
+        const f = btn.getAttribute('data-exam-review-filter');
+        btn.className = (f === examReviewFilter)
+          ? 'exam-rev-pill px-3 py-1 rounded-lg text-xs font-semibold bg-indigo-600 text-white'
+          : 'exam-rev-pill px-3 py-1 rounded-lg text-xs font-semibold bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-500';
+      });
+
+      const filtered = examSession.items.map(function (it, i) {
+        return { it: it, num: i + 1 };
+      }).filter(function (row) {
+        if (examReviewFilter === 'wrong') return row.it.selectedOrigKey !== row.it.card.answer;
+        if (examReviewFilter === 'flagged') return row.it.flagged;
+        return true;
+      });
+
+      const container = document.getElementById('examReviewCardsList');
+      if (filtered.length === 0) {
+        container.innerHTML = '<div class="p-8 text-center text-xs text-slate-400">Empty</div>';
+        return;
+      }
+
+      container.innerHTML = filtered.map(function (row) {
+        const c = row.it.card;
+        const chosen = row.it.selectedOrigKey;
+        const isRight = chosen === c.answer;
+        const statusDot = isRight
+          ? '<span class="w-2 h-2 rounded-full bg-emerald-500 inline-block"></span>'
+          : '<span class="w-2 h-2 rounded-full bg-rose-500 inline-block"></span>';
+
+        const optsHtml = ['A', 'B', 'C', 'D'].map(function (k) {
+          let cls = 'border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-300';
+          if (k === c.answer) cls = 'border-emerald-500 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-950 dark:text-emerald-100 font-semibold';
+          else if (k === chosen && !isRight) cls = 'border-rose-400 bg-rose-50 dark:bg-rose-950/40 text-rose-900 dark:text-rose-200 line-through';
+          return '<div class="px-3 py-1.5 rounded-lg border text-xs sm:text-sm ' + cls + '"><span class="font-mono font-bold mr-1.5">' + k + '</span>' + escapeHtml(c.options[k]) + '</div>';
+        }).join('');
+
+        return '<div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4 space-y-2.5">' +
+          '<div class="flex items-center justify-between text-xs text-slate-400">' +
+            '<div class="flex items-center gap-2 font-mono">' + statusDot + '<span>#' + row.num + ' · ' + escapeHtml(c.setTitle) + '</span></div>' +
+            '<a href="' + escapeHtml(c.sourceUrl) + '" target="_blank" rel="noopener noreferrer" class="hover:text-indigo-500">↗</a>' +
+          '</div>' +
+          '<p class="font-semibold text-sm">' + escapeHtml(c.question) + '</p>' +
+          '<div class="grid grid-cols-1 gap-1.5">' + optsHtml + '</div>' +
+          (c.explanation ? '<div class="text-xs text-slate-500 bg-slate-50 dark:bg-slate-800/60 p-2.5 rounded-lg">' + escapeHtml(c.explanation) + '</div>' : '') +
+        '</div>';
+      }).join('');
+    }
+
+    // ==================== BROWSE LIST ====================
+    let browsePage = 1;
+    const BROWSE_PAGE_SIZE = 15;
+    let revealedInBrowse = {};
+
+    function renderBrowseView() {
+      const q = (document.getElementById('browseSearchInput').value || '').trim().toLowerCase();
+      document.getElementById('chkBrowseHideAnswers').checked = !!appState.browseHideAnswers;
+
+      const filtered = getFilteredCards().filter(function (c) {
+        if (!q) return true;
+        const hay = (c.question + ' ' + c.options.A + ' ' + c.options.B + ' ' + c.options.C + ' ' + c.options.D + ' ' + c.explanation).toLowerCase();
+        return hay.indexOf(q) !== -1;
+      });
+
+      document.getElementById('browseResultCount').textContent = String(filtered.length);
+
+      const totalPages = Math.max(1, Math.ceil(filtered.length / BROWSE_PAGE_SIZE));
+      if (browsePage > totalPages) browsePage = totalPages;
+      if (browsePage < 1) browsePage = 1;
+
+      const slice = filtered.slice((browsePage - 1) * BROWSE_PAGE_SIZE, browsePage * BROWSE_PAGE_SIZE);
+      const container = document.getElementById('browseCardsContainer');
+
+      if (slice.length === 0) {
+        container.innerHTML = '<div class="p-10 text-center text-xs text-slate-400">No match</div>';
+      } else {
+        container.innerHTML = slice.map(function (c) {
+          const p = getCardProgress(c.id);
+          const hideAns = appState.browseHideAnswers && !revealedInBrowse[c.id];
+          const stBtnCls = p.status === 'mastered'
+            ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300'
+            : (p.status === 'learning'
+              ? 'bg-indigo-100 text-indigo-800 dark:bg-indigo-950 dark:text-indigo-300'
+              : 'bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400');
+          const stLabel = p.status === 'mastered' ? 'Mastered' : (p.status === 'learning' ? 'Familiar' : 'New');
+
+          const optsGrid = ['A', 'B', 'C', 'D'].map(function (k) {
+            const isCorrectOpt = !hideAns && k === c.answer;
+            const cls = isCorrectOpt
+              ? 'border-emerald-500 bg-emerald-50/90 dark:bg-emerald-950/40 text-emerald-950 dark:text-emerald-100 font-semibold'
+              : 'border-slate-200/70 dark:border-slate-800 text-slate-600 dark:text-slate-300';
+            return '<div class="px-3 py-1.5 rounded-lg border text-xs sm:text-sm ' + cls + '"><span class="font-mono font-bold mr-1.5 opacity-60">' + k + '</span>' + escapeHtml(c.options[k]) + '</div>';
+          }).join('');
+
+          return '<article class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4 space-y-2.5 shadow-sm">' +
+            '<div class="flex items-center justify-between">' +
+              '<span class="text-xs font-mono font-semibold text-indigo-600 dark:text-indigo-400">' + escapeHtml(c.setTitle) + ' #' + c.num + '</span>' +
+              '<div class="flex items-center gap-1.5">' +
+                '<button type="button" data-browse-toggle-status="' + c.id + '" class="px-2 py-0.5 rounded text-[11px] font-semibold ' + stBtnCls + '">' + stLabel + '</button>' +
+                '<button type="button" data-browse-star="' + c.id + '" class="px-1.5 py-0.5 rounded text-xs ' + (p.starred ? 'text-amber-500' : 'text-slate-300 hover:text-amber-500') + '">★</button>' +
+                '<a href="' + escapeHtml(c.sourceUrl) + '" target="_blank" rel="noopener noreferrer" class="text-xs text-slate-400 hover:text-indigo-500">↗</a>' +
+              '</div>' +
+            '</div>' +
+            '<h3 class="font-semibold text-sm sm:text-base leading-snug">' + escapeHtml(c.question) + '</h3>' +
+            '<div class="grid grid-cols-1 gap-1.5">' + optsGrid + '</div>' +
+            (hideAns
+              ? '<button type="button" data-browse-reveal="' + c.id + '" class="px-2.5 py-1 rounded-lg bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-300 text-xs font-semibold">Show</button>'
+              : (c.explanation ? '<p class="text-xs text-slate-500 bg-slate-50 dark:bg-slate-800/60 p-2 rounded-lg">' + escapeHtml(c.explanation) + '</p>' : '')) +
+          '</article>';
+        }).join('');
+      }
+
+      document.getElementById('browsePageIndicator').textContent = browsePage + ' / ' + totalPages;
+      document.getElementById('btnBrowsePrevPage').disabled = browsePage <= 1;
+      document.getElementById('btnBrowseNextPage').disabled = browsePage >= totalPages;
+    }
+
+    // ==================== MODE SWITCHING ====================
+    function switchMode(mode) {
+      clearAutoAdvance();
+      appState.activeMode = mode;
+      saveProgress();
+
+      document.querySelectorAll('.mode-tab-btn').forEach(function (btn) {
+        const m = btn.getAttribute('data-mode-tab');
+        if (m === mode) {
+          btn.classList.add('bg-white', 'dark:bg-slate-900', 'text-indigo-600', 'dark:text-indigo-400', 'shadow-sm');
+          btn.classList.remove('text-slate-600', 'dark:text-slate-400');
+        } else {
+          btn.classList.remove('bg-white', 'dark:bg-slate-900', 'text-indigo-600', 'dark:text-indigo-400', 'shadow-sm');
+          btn.classList.add('text-slate-600', 'dark:text-slate-400');
+        }
+      });
+
+      const views = {
+        learn: document.getElementById('viewLearn'),
+        exam: document.getElementById('viewExam'),
+        browse: document.getElementById('viewBrowse')
+      };
+      Object.keys(views).forEach(function (k) {
+        if (k === mode) views[k].classList.remove('hidden');
+        else views[k].classList.add('hidden');
+      });
+
+      const overviewBar = document.getElementById('deckOverviewBar');
+      if (mode === 'exam') overviewBar.classList.add('hidden');
+      else overviewBar.classList.remove('hidden');
+
+      if (mode === 'learn') {
+        if (!learnState.queue.length && learnState.roundTotal === 0) startNewLearnRound(false);
+        else renderLearnView();
+      } else if (mode === 'exam') {
+        renderExamHistory();
+      } else if (mode === 'browse') {
+        renderBrowseView();
+      }
+
+      if (window.lucide) {
+        try { window.lucide.createIcons(); } catch (e) {}
+      }
+    }
+
+    let pendingConfirmCallback = null;
+    function openConfirmModal(title, message, okLabel, onConfirm) {
+      document.getElementById('modalConfirmTitle').textContent = title;
+      document.getElementById('modalConfirmMessage').textContent = message;
+      document.getElementById('btnModalConfirmOk').textContent = okLabel || 'Confirm';
+      pendingConfirmCallback = onConfirm;
+      document.getElementById('modalConfirm').classList.remove('hidden');
+    }
+
+    function closeConfirmModal() {
+      pendingConfirmCallback = null;
+      document.getElementById('modalConfirm').classList.add('hidden');
+    }
+
+    window.addEventListener('DOMContentLoaded', function () {
+      applyTheme();
+      renderDeckOverview();
+
+      document.querySelectorAll('.mode-tab-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          switchMode(btn.getAttribute('data-mode-tab'));
+        });
+      });
+
+      document.getElementById('btnToggleTheme').addEventListener('click', function () {
+        appState.darkMode = !appState.darkMode;
+        applyTheme();
+        saveProgress();
+      });
+
+      // Options modal
+      document.getElementById('btnOpenOptionsModal').addEventListener('click', function () {
+        document.getElementById('chkLearnAutoNext').checked = !!appState.learnAutoNext;
+        document.getElementById('chkLearnShuffleOpts').checked = !!appState.learnShuffleOpts;
+        document.getElementById('selMasteryGoal').value = String(appState.masteryGoal || 2);
+        document.getElementById('selRoundSize').value = String(appState.roundSize || 7);
+        document.getElementById('modalOptions').classList.remove('hidden');
+      });
+
+      document.getElementById('btnCloseOptionsModal').addEventListener('click', function () {
+        document.getElementById('modalOptions').classList.add('hidden');
+      });
+
+      document.getElementById('chkLearnAutoNext').addEventListener('change', function (e) {
+        appState.learnAutoNext = e.target.checked;
+        saveProgress();
+      });
+
+      document.getElementById('chkLearnShuffleOpts').addEventListener('change', function (e) {
+        appState.learnShuffleOpts = e.target.checked;
+        saveProgress();
+        if (!learnState.answeredCurrent) {
+          prepareCurrentLearnOptions();
+          renderLearnView();
+        }
+      });
+
+      document.getElementById('selMasteryGoal').addEventListener('change', function (e) {
+        appState.masteryGoal = parseInt(e.target.value, 10) || 2;
+        saveProgress();
+        renderLearnView();
+      });
+
+      document.getElementById('selRoundSize').addEventListener('change', function (e) {
+        appState.roundSize = parseInt(e.target.value, 10) || 7;
+        saveProgress();
+        startNewLearnRound(false);
+      });
+
+      // Deck & Filter selection
+      document.getElementById('deckPillsContainer').addEventListener('click', function (e) {
+        const btn = e.target.closest('[data-deck-select]');
+        if (!btn) return;
+        appState.activeDeck = btn.getAttribute('data-deck-select');
+        appState.roundNumber = 1;
+        browsePage = 1;
+        saveProgress();
+        renderDeckOverview();
+        if (appState.activeMode === 'learn') startNewLearnRound(false);
+        else if (appState.activeMode === 'browse') renderBrowseView();
+      });
+
+      document.getElementById('statusFilterPills').addEventListener('click', function (e) {
+        const btn = e.target.closest('[data-status-filter]');
+        if (!btn) return;
+        appState.statusFilter = btn.getAttribute('data-status-filter');
+        browsePage = 1;
+        saveProgress();
+        renderDeckOverview();
+        if (appState.activeMode === 'learn') startNewLearnRound(false);
+        else if (appState.activeMode === 'browse') renderBrowseView();
+      });
+
+      document.getElementById('btnResetLearnFilter').addEventListener('click', function () {
+        appState.statusFilter = 'all';
+        saveProgress();
+        renderDeckOverview();
+        startNewLearnRound(false);
+      });
+
+      // Learn interactions
+      document.getElementById('learnOptionsContainer').addEventListener('click', function (e) {
+        const btn = e.target.closest('[data-learn-choice]');
+        if (!btn) return;
+        evaluateLearnChoice(btn.getAttribute('data-learn-choice'), false);
+      });
+
+      document.getElementById('btnLearnDontKnow').addEventListener('click', function () {
+        evaluateLearnChoice(null, true);
+      });
+
+      document.getElementById('btnLearnContinue').addEventListener('click', advanceLearnStep);
+      document.getElementById('btnLearnNewRound').addEventListener('click', function () {
+        startNewLearnRound(false);
+        showToast('New round');
+      });
+      document.getElementById('btnLearnNextBatch').addEventListener('click', function () {
+        startNewLearnRound(true);
+      });
+      document.getElementById('btnLearnSwitchExam').addEventListener('click', function () {
+        switchMode('exam');
+      });
+
+      document.getElementById('btnLearnStar').addEventListener('click', function () {
+        if (!learnState.queue.length) return;
+        const prog = getCardProgress(learnState.queue[0].cardId);
+        prog.starred = !prog.starred;
+        saveProgress();
+        renderDeckOverview();
+        renderLearnView();
+      });
+
+      document.getElementById('btnLearnSpeak').addEventListener('click', function () {
+        if (!learnState.queue.length) return;
+        const card = STUDY_DATA.cards.find(function (c) { return c.id === learnState.queue[0].cardId; });
+        if (!card) return;
+        try {
+          if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+            const u = new SpeechSynthesisUtterance(card.question);
+            u.lang = 'en-US';
+            u.rate = 0.98;
+            window.speechSynthesis.speak(u);
+          }
+        } catch (err) {}
+      });
+
+      // Exam interactions
+      document.getElementById('btnStartExam').addEventListener('click', startMockExam);
+
+      document.getElementById('examOptionsList').addEventListener('click', function (e) {
+        const btn = e.target.closest('[data-exam-opt]');
+        if (!btn || !examSession) return;
+        examSession.items[examSession.currentIndex].selectedOrigKey = btn.getAttribute('data-exam-opt');
+        renderActiveExamQuestion();
+      });
+
+      document.getElementById('examPaletteGrid').addEventListener('click', function (e) {
+        const btn = e.target.closest('[data-exam-jump]');
+        if (!btn || !examSession) return;
+        examSession.currentIndex = parseInt(btn.getAttribute('data-exam-jump'), 10);
+        renderActiveExamQuestion();
+      });
+
+      document.getElementById('btnExamFlag').addEventListener('click', function () {
+        if (!examSession) return;
+        const item = examSession.items[examSession.currentIndex];
+        item.flagged = !item.flagged;
+        renderActiveExamQuestion();
+      });
+
+      document.getElementById('btnExamPrev').addEventListener('click', function () {
+        if (!examSession || examSession.currentIndex <= 0) return;
+        examSession.currentIndex -= 1;
+        renderActiveExamQuestion();
+      });
+
+      document.getElementById('btnExamNext').addEventListener('click', function () {
+        if (!examSession || examSession.currentIndex >= examSession.items.length - 1) return;
+        examSession.currentIndex += 1;
+        renderActiveExamQuestion();
+      });
+
+      document.getElementById('btnSubmitExamRequest').addEventListener('click', function () {
+        if (!examSession) return;
+        const unanswered = examSession.items.filter(function (it) { return !it.selectedOrigKey; }).length;
+        if (unanswered > 0) {
+          openConfirmModal('Submit test?', unanswered + ' unanswered questions.', 'Submit', finishMockExam);
+        } else {
+          finishMockExam();
+        }
+      });
+
+      document.getElementById('btnCancelExam').addEventListener('click', function () {
+        openConfirmModal('Quit test?', 'Current attempt will be discarded.', 'Quit', function () {
+          clearExamTimer();
+          examSession = null;
+          document.getElementById('examActivePanel').classList.add('hidden');
+          document.getElementById('examSetupPanel').classList.remove('hidden');
+        });
+      });
+
+      document.getElementById('btnNewExamSetup').addEventListener('click', function () {
+        clearExamTimer();
+        examSession = null;
+        document.getElementById('examResultPanel').classList.add('hidden');
+        document.getElementById('examSetupPanel').classList.remove('hidden');
+      });
+
+      document.getElementById('btnPracticeWrongExam').addEventListener('click', function () {
+        if (!examSession || !examSession.wrongCardIds || !examSession.wrongCardIds.length) return;
+        const subset = examSession.wrongCardIds.slice(0, parseInt(appState.roundSize, 10) || 7);
+        learnState.roundCardIds = subset.slice();
+        learnState.queue = subset.map(function (id) {
+          return { cardId: id, isRetry: false };
+        });
+        learnState.passedInRound = 0;
+        learnState.roundTotal = learnState.queue.length;
+        learnState.answeredCurrent = false;
+        prepareCurrentLearnOptions();
+        switchMode('learn');
+        renderLearnView();
+      });
+
+      document.querySelectorAll('.exam-rev-pill').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          examReviewFilter = btn.getAttribute('data-exam-review-filter');
+          renderExamReviewList();
+        });
+      });
+
+      // Browse interactions
+      document.getElementById('browseSearchInput').addEventListener('input', function () {
+        browsePage = 1;
+        renderBrowseView();
+      });
+
+      document.getElementById('chkBrowseHideAnswers').addEventListener('change', function (e) {
+        appState.browseHideAnswers = e.target.checked;
+        revealedInBrowse = {};
+        saveProgress();
+        renderBrowseView();
+      });
+
+      document.getElementById('browseCardsContainer').addEventListener('click', function (e) {
+        const revBtn = e.target.closest('[data-browse-reveal]');
+        if (revBtn) {
+          revealedInBrowse[revBtn.getAttribute('data-browse-reveal')] = true;
+          renderBrowseView();
+          return;
+        }
+        const starBtn = e.target.closest('[data-browse-star]');
+        if (starBtn) {
+          const id = starBtn.getAttribute('data-browse-star');
+          const p = getCardProgress(id);
+          p.starred = !p.starred;
+          saveProgress();
+          renderDeckOverview();
+          renderBrowseView();
+          return;
+        }
+        const stBtn = e.target.closest('[data-browse-toggle-status]');
+        if (stBtn) {
+          const id = stBtn.getAttribute('data-browse-toggle-status');
+          const p = getCardProgress(id);
+          const nextMap = { unseen: 'learning', learning: 'mastered', mastered: 'unseen' };
+          p.status = nextMap[p.status] || 'unseen';
+          p.streak = p.status === 'mastered' ? 2 : (p.status === 'learning' ? 1 : 0);
+          saveProgress();
+          renderDeckOverview();
+          renderBrowseView();
+        }
+      });
+
+      document.getElementById('btnBrowsePrevPage').addEventListener('click', function () {
+        if (browsePage > 1) {
+          browsePage -= 1;
+          renderBrowseView();
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+      });
+
+      document.getElementById('btnBrowseNextPage').addEventListener('click', function () {
+        browsePage += 1;
+        renderBrowseView();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+
+      // Backup & Reset Modals
+      document.getElementById('btnOpenBackupModal').addEventListener('click', function () {
+        document.getElementById('txtBackupJson').value = JSON.stringify(appState, null, 2);
+        document.getElementById('modalBackup').classList.remove('hidden');
+      });
+
+      document.getElementById('btnCloseBackupModal').addEventListener('click', function () {
+        document.getElementById('modalBackup').classList.add('hidden');
+      });
+
+      document.getElementById('btnCopyBackupJson').addEventListener('click', function () {
+        const txt = document.getElementById('txtBackupJson');
+        txt.select();
+        try {
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(txt.value).then(function () {
+              showToast('Copied');
+            }).catch(function () {
+              document.execCommand('copy');
+              showToast('Copied');
+            });
+          } else {
+            document.execCommand('copy');
+            showToast('Copied');
+          }
+        } catch (err) {
+          showToast('Ctrl+C');
+        }
+      });
+
+      document.getElementById('btnDownloadBackupJson').addEventListener('click', function () {
+        const blob = new Blob([JSON.stringify(appState, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'rel301m_progress.json';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        showToast('Downloaded');
+      });
+
+      document.getElementById('btnRestoreBackupJson').addEventListener('click', function () {
+        try {
+          const parsed = JSON.parse(document.getElementById('txtBackupJson').value);
+          if (!parsed || typeof parsed !== 'object') throw new Error('Invalid');
+          appState = Object.assign(createDefaultProgress(), parsed);
+          if (appState.activeMode === 'flashcards') appState.activeMode = 'learn';
+          saveProgress();
+          applyTheme();
+          renderDeckOverview();
+          startNewLearnRound(false);
+          switchMode(appState.activeMode || 'learn');
+          document.getElementById('modalBackup').classList.add('hidden');
+          showToast('Restored');
+        } catch (err) {
+          showToast('Invalid JSON');
+        }
+      });
+
+      document.getElementById('btnOpenResetModal').addEventListener('click', function () {
+        openConfirmModal('Reset progress?', 'Clear mastery progress for current deck.', 'Reset', function () {
+          const targetCards = getCardsByDeck(appState.activeDeck);
+          targetCards.forEach(function (c) {
+            delete appState.cards[c.id];
+          });
+          appState.roundNumber = 1;
+          saveProgress();
+          renderDeckOverview();
+          if (appState.activeMode === 'learn') startNewLearnRound(false);
+          else if (appState.activeMode === 'browse') renderBrowseView();
+          showToast('Reset');
+        });
+      });
+
+      document.getElementById('btnModalConfirmCancel').addEventListener('click', closeConfirmModal);
+      document.getElementById('btnModalConfirmOk').addEventListener('click', function () {
+        const fn = pendingConfirmCallback;
+        closeConfirmModal();
+        if (typeof fn === 'function') fn();
+      });
+
+      // Keyboard shortcuts (1-4 to pick, Enter/Space to continue, 0 for Don't know, S to star)
+      window.addEventListener('keydown', function (e) {
+        const tag = (e.target && e.target.tagName) ? e.target.tagName.toLowerCase() : '';
+        if (tag === 'input' || tag === 'textarea' || tag === 'select') return;
+        if (!document.getElementById('modalConfirm').classList.contains('hidden')) return;
+        if (!document.getElementById('modalBackup').classList.contains('hidden')) return;
+        if (!document.getElementById('modalOptions').classList.contains('hidden')) return;
+
+        if (appState.activeMode === 'learn') {
+          if (learnState.queue.length === 0 && (e.key === 'Enter' || e.code === 'Space')) {
+            e.preventDefault();
+            startNewLearnRound(true);
+            return;
+          }
+          if (learnState.answeredCurrent && (e.key === 'Enter' || e.code === 'Space')) {
+            e.preventDefault();
+            advanceLearnStep();
+            return;
+          }
+          if (!learnState.answeredCurrent && learnState.queue.length > 0) {
+            const idxMap = { '1': 0, '2': 1, '3': 2, '4': 3, 'a': 0, 'b': 1, 'c': 2, 'd': 3 };
+            const k = e.key.toLowerCase();
+            if (Object.prototype.hasOwnProperty.call(idxMap, k)) {
+              e.preventDefault();
+              const chosenOrig = learnState.currentOptionOrder[idxMap[k]];
+              if (chosenOrig) evaluateLearnChoice(chosenOrig, false);
+            } else if (e.key === '0') {
+              e.preventDefault();
+              evaluateLearnChoice(null, true);
+            } else if (k === 's') {
+              e.preventDefault();
+              document.getElementById('btnLearnStar').click();
+            }
+          }
+        }
+      });
+
+      startNewLearnRound(false);
+      switchMode('learn');
+    });
+  </script>
+</body>
+</html>
